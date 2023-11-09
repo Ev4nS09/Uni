@@ -68,6 +68,37 @@ public class Board implements Ilayout,Cloneable{
         initialize();
     }
 
+    private boolean equalsCurrentTurn(ID turn){
+        return turn.name().equals(getTurn().name());
+    }
+
+    private boolean checkWinner(int index, int range, int jump){
+        for(int j = index; range >= 0; j += jump){
+            if(!equalsCurrentTurn(board[j/rows][j%rows]))
+                break;
+            if(--range == 0)
+                return true;
+        }
+        return false;
+    }
+
+    private boolean checkWinner(){
+        for(int i = 0; i < rc; i++){
+            if(i + k - 1 < columns && checkWinner(i, k,1)) // Cheks if there is a horizontal line of k IDs
+                return true;
+
+            if(i + (k-1)*rows < rc && checkWinner(i, k, rows)) // Cheks if there is a vertical line of k IDs
+                return true;
+
+            if(i + (k-1) < columns && i + (k-1)*rows + (k-1) < rc && checkWinner(i, k, rows + 1)) // Cheks if there is a right diagonal line of k IDs
+                return true;  
+
+            if(i - (k-1) >= 0 && i + (k-1)*rows - (k-1) < rc && checkWinner(i, k, rows - 1)) // Cheks if there is a left diagonal line of k IDs
+                return true; 
+        }
+        return false;
+    }
+
     /**
      * Places an X or an O on the specified index depending on whose turn it is.
      * @param index     position starts in 0 and increases from left to right and from top to bottom
@@ -111,34 +142,6 @@ public class Board implements Ilayout,Cloneable{
 
         playersTurn = (playersTurn == ID.X) ? ID.O : ID.X;
         return true;
-    }
-
-    private boolean isCurrentTurn(ID turn){
-        return turn.name().equals(getTurn().name());
-    }
-
-    private boolean checkWinner(int index, int range, int sum){
-        for(int j = index; j < range; j+=sum){
-            if(!isCurrentTurn(board[j/rows][j%rows]))
-                break;
-            if(j == range - 1)
-                return true;
-        }
-        return false;
-    }
-
-    private boolean checkWinner(){
-        for(int i = 0; i < rc; i++){
-            if(i + k - 1 < columns && checkWinner(i, i + k,1))
-                return true;
-
-            if(i + k*(rows-1) < rc && checkWinner(i, i + k*(rows-1) + 1, rows))
-                return true;
-
-            if(i + k*columns - 1 < rc && checkWinner(i, i + k*rows, rows+1))
-                return true;    
-        }
-        return false;
     }
 
     /**

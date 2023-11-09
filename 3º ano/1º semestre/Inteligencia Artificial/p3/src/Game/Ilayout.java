@@ -2,7 +2,7 @@ package Game;
 
 import java.util.*;
 
-interface Ilayout {
+public interface Ilayout {
 
     public enum ID{Blank, X, O}
 
