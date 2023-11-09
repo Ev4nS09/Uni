@@ -1,3 +1,5 @@
+package Game;
+
 import java.util.*;
 // import java.util.ArrayList;
 
@@ -111,13 +113,13 @@ public class Board implements Ilayout,Cloneable{
         return true;
     }
 
-    private boolean equalsCurrentTurn(ID turn){
+    private boolean isCurrentTurn(ID turn){
         return turn.name().equals(getTurn().name());
     }
 
-    private boolean checkWinner(int index, int range, int jump){
-        for(int j = index; j < range; j += jump){
-            if(!equalsCurrentTurn(board[j/rows][j%rows]))
+    private boolean checkWinner(int index, int range, int sum){
+        for(int j = index; j < range; j+=sum){
+            if(!isCurrentTurn(board[j/rows][j%rows]))
                 break;
             if(j == range - 1)
                 return true;
@@ -127,13 +129,13 @@ public class Board implements Ilayout,Cloneable{
 
     private boolean checkWinner(){
         for(int i = 0; i < rc; i++){
-            if(i + k - 1 < columns && checkWinner(i, i + k,1)) // Cheks if there is a horizontal line of k IDs
+            if(i + k - 1 < columns && checkWinner(i, i + k,1))
                 return true;
 
-            if(i + k*(rows-1) < rc && checkWinner(i, i + k*(rows-1) + 1, rows)) // Cheks if there is a vertical line of k IDs
+            if(i + k*(rows-1) < rc && checkWinner(i, i + k*(rows-1) + 1, rows))
                 return true;
 
-            if(i + k*columns - 1 < rc && checkWinner(i, i + k*rows, rows+1)) // Cheks if there is a diagonal line of k IDs
+            if(i + k*columns - 1 < rc && checkWinner(i, i + k*rows, rows+1))
                 return true;    
         }
         return false;

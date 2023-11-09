@@ -1,7 +1,10 @@
+package Game;
+
 import java.util.*;
+
 interface Ilayout {
 
-    enum ID{Blank, X, O}
+    public enum ID{Blank, X, O}
 
 
 
