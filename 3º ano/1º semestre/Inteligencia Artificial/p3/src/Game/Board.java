@@ -220,12 +220,12 @@ public class Board implements Ilayout,Cloneable{
     public Object clone () {
     	try {
 	        Board b = (Board) super.clone();
-	
 	        b.board = new ID[rows][columns];
-	        for (int i = 0; i < rows; i++)
-	        	for (int j = 0; i < columns; j++)
+            
+	        for (int i = 0; i < this.rows; i++)
+	        	for (int j = 0; j < this.columns; j++)
 	        		b.board[i][j] = this.board[i][j];
-	       
+                    
 	        b.playersTurn       = this.playersTurn;
 	        b.winner            = this.winner;
 	        b.movesAvailable    = new HashSet<Integer>();

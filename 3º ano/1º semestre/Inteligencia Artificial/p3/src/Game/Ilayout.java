@@ -45,6 +45,9 @@ public interface Ilayout {
     */
     public List<Ilayout> children ();
 
+    @Override
+    public boolean equals(Object layout);
+
 
 
 }

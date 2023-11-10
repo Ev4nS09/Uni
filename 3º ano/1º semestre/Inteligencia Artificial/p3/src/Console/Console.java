@@ -108,6 +108,9 @@ public class Console {
     
 
     public static void main(String[] args){
+        Board board = new Board(4, 4, 4);
+        Board board2 = (Board) board.clone();
+
     	final int repetitions=3;
     	long times = 0;
     	for(int i=0; i<repetitions; i++) {
