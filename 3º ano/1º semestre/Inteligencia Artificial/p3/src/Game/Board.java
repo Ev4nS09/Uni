@@ -21,9 +21,8 @@ public class Board implements Ilayout,Cloneable{
 
     private int moveCount;
     private boolean gameOver;
-
     
-    public Board(int rows, int columns, int k) throws Exception {
+    public Board(int rows, int columns, int k) {
 
         if(rows != columns)
             throw new InputMismatchException("The number of rows must be equal to the number of columns.");
@@ -41,6 +40,43 @@ public class Board implements Ilayout,Cloneable{
         reset();
     }
 
+    public Board(ID[][] board, int k){
+        this(board.length, board.length > 0 ? board[0].length : 0, k);
+
+        if(board.length <= 0 || board[0].length <= 0)
+            throw new InputMismatchException("Board must not be empty.");
+            
+        this.board = board;
+
+        this.playersTurn = calculateLastTurn();
+        
+        if(this.gameOver = checkWinner())
+             this.winner = this.playersTurn;
+
+        this.playersTurn = (this.playersTurn == ID.X) ? ID.O : ID.X;
+        setCurrentMoveCount();
+    }
+
+    private void setCurrentMoveCount() {
+        int result = 0;
+        for(int i = 0; i < rc; i++)
+            if(board[i/rows][i%rows] != ID.Blank)
+                result++;
+        this.moveCount = result;
+    }
+
+    private ID calculateLastTurn(){
+        int X = 0;
+        int O = 0;
+        for(int i = 0; i < this.rc; i++){
+            if(board[i/rows][i%rows] ==  ID.X)
+                X++;
+            else if(board[i/rows][i%rows] ==  ID.O)
+                O++;
+        }
+        return X == O ? ID.O : ID.X;
+    } 
+
     /**
      * Set the cells to be blank and load the available moves (all the moves are
      * available at the start of the game).
@@ -52,7 +88,7 @@ public class Board implements Ilayout,Cloneable{
             }
         movesAvailable.clear();
 
-        for (int i = 0; i < rc; i++) {
+        for (int i = 0; i < this.rc; i++) {
             movesAvailable.add(i);
         }
     }
@@ -61,20 +97,16 @@ public class Board implements Ilayout,Cloneable{
      * Restart the game with a new blank board.
      */
     public void reset() {
-        moveCount = 0;
-        gameOver = false;
-        playersTurn = ID.X;
-        winner = ID.Blank;
+        this.moveCount = 0;
+        this.gameOver = false;
+        this.playersTurn = ID.X;
+        this.winner = ID.Blank;
         initialize();
-    }
-
-    private boolean equalsCurrentTurn(ID turn){
-        return turn.name().equals(getTurn().name());
     }
 
     private boolean checkWinner(int index, int range, int jump){
         for(int j = index; range >= 0; j += jump){
-            if(!equalsCurrentTurn(board[j/rows][j%rows]))
+            if(!isCurrentTurn(board[j/rows][j%rows]))
                 break;
             if(--range == 0)
                 return true;
@@ -267,4 +299,8 @@ public class Board implements Ilayout,Cloneable{
 		int y=index%rows;
         return (board[x][y] == ID.Blank);
 	}
+
+    public boolean isCurrentTurn(ID turn){
+        return turn.name().equals(getTurn().name());
+    }
 }

@@ -21,7 +21,7 @@ public class Console {
 
     private Scanner sc = new Scanner(System.in);
 
-    private Console() throws Exception {
+    private Console(){
 
         System.out.print("Rows: ");
         this.rows = Integer.parseInt(sc.next());
@@ -107,17 +107,17 @@ public class Console {
 
     
 
-    public static void main(String[] args) throws Exception  {
-    	    final int repetitions=3;
-    	    long times = 0;
-    	    for(int i=0; i<repetitions; i++) {
-    	    	Console game = new Console();
-	    	    long startTime = System.currentTimeMillis();
-	    	    game.play();      	
-	    	    long totalTime = System.currentTimeMillis() - startTime;
-	    	    times += totalTime;
-    	    }
-    	    System.out.println("Av Time: " + times*1.0f/repetitions+ " milisecs"); 
+    public static void main(String[] args){
+    	final int repetitions=3;
+    	long times = 0;
+    	for(int i=0; i<repetitions; i++) {
+            Console game = new Console();
+            long startTime = System.currentTimeMillis();
+            game.play();      	
+            long totalTime = System.currentTimeMillis() - startTime;
+            times += totalTime;
+        }
+        System.out.println("Av Time: " + times*1.0f/repetitions+ " milisecs"); 
+    
     }
-
 }
