@@ -1,0 +1,9 @@
+2 4
+34 18
+3
+4
+7
+5
+Circunferencia 10 10 3
+Triangulo 0 0 2 0 3 3
+Retangulo 4 4 6 4 6 6 4 6
