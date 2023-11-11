@@ -1,0 +1,15 @@
+-6 -3 torpedo
+-5 8 stingray
+-3 2 nossasenhoradomar
+-2 -7 maralto
+-2 1 torpedo
+-3 6 stingray
+-3 -3 nossasenhoradomar
+-2 -7 maralto
+5 7 barracuda
+4 8 turtleone
+2 8 torpedo
+5 5 stingray
+1 3 barracuda
+3 -7 maralto
+9 9 whiteshark

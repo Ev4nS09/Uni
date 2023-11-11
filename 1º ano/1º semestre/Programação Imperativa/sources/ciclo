@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <math.h>
+
+double factorial(int n)
+{
+double result = 1.0;
+for (int i = 0; i < n; i++)
+result *= i + 1;
+return result;
+}
+
+void teste_factorial(void)
+{
+	int n;
+	while(scanf("d%", &n) != EOF)
+	{
+	int z = double factorial(n)
+	printf("%d\n", z)
+	}
+}
+
+int main(void)
+{
+	test_factorial();
+	return 0; 
+}

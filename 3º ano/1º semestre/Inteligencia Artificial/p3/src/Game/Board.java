@@ -49,7 +49,6 @@ public class Board implements Ilayout,Cloneable{
         this.board = board;
 
         this.playersTurn = calculateLastTurn();
-        
         if(this.gameOver = checkWinner())
              this.winner = this.playersTurn;
 
@@ -69,9 +68,9 @@ public class Board implements Ilayout,Cloneable{
         int X = 0;
         int O = 0;
         for(int i = 0; i < this.rc; i++){
-            if(board[i/rows][i%rows] ==  ID.X)
+            if(board[i/rows][i%rows] == ID.X)
                 X++;
-            else if(board[i/rows][i%rows] ==  ID.O)
+            else if(board[i/rows][i%rows] == ID.O)
                 O++;
         }
         return X == O ? ID.O : ID.X;

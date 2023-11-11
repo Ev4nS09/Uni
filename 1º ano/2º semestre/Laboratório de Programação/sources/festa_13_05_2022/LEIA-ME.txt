@@ -1,0 +1,6 @@
+ATENÇÃO
+=======
+
+Nos ficheiro de output do programa Tetris, há um espaço em branco à esquerda do primeiro número.
+
+Este formato visa tornar a escrita das linhas mais simples, recorrendo diretamenta à função `matrix_printf`, ou a uma variante desta.

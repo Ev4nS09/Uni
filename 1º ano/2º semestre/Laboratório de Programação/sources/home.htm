@@ -1,0 +1,243 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; UTF-8" />
+<link href="/shadowftp/static/css/bootstrap.min.css" rel="stylesheet">
+<link href="/shadowftp/static/css/navbar-fixed-side.css" rel="stylesheet">
+<link href="/shadowftp/static/css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="/shadowftp/static/js/jquery-3.2.1.min.js"></script>
+
+<script src="/shadowftp/static/js/common.js"></script>
+
+<link href="/shadowftp/static/css/common.css" rel="stylesheet">
+<link href="/shadowftp/static/jquery-filetree/jqueryFileTree.css" rel="stylesheet">
+<script src="/shadowftp/static/jquery-filetree/jquery.easing.js"></script>
+<script src="/shadowftp/static/jquery-filetree/jqueryFileTree.js"></script>
+
+<script src="/shadowftp/static/js/jquery.ui.position.min.js"></script>
+<script src="/shadowftp/static/js/jquery.contextMenu.min.js"></script>
+<link href="/shadowftp/static/css/jquery.contextMenu.min.css" rel="stylesheet">
+
+<title>Shadow File Browser</title>
+<link rel="shortcut icon" href="/shadowftp/static/images/favicon.ico" />
+
+<script>
+$(document).ready(function() {
+
+
+    /* LOGOUT */
+
+    $("#logout-btn").click(function(){
+       $.ajax ({
+          url: '/shadowftp/logout',
+          type: 'GET',
+          success: function(data){
+              localStorage.clear();
+	            window.location.href = '/shadowftp/login'
+          }
+        }); 
+    });
+
+    $('.filetree-basic').fileTree({
+       selector : '.filetree-basic',
+       root : '/var/log/filebrowser/userdisks/6b4c9d50f178ce0de3ad2e6b93921b4caf7fcd9345c443589b7e7cff433b6837',
+       script: '/shadowftp/dirlist',
+       panel : '.filepanel',
+       multiFolder : false
+    });
+
+    /* LOGOUT */
+
+    $("#logged-user").text(localStorage.login);
+
+    $.contextMenu.types.downloadFile = function(item, opt, root) {
+        $('<a id="download-file-link">Download</a>').appendTo(this)
+    };
+
+    $.contextMenu({
+        selector: '.file', 
+        callback: function(key, options) {
+            switch(key){
+              case "download":
+                url = options.$trigger.find('a').attr('rel')
+                if(url == undefined) url = options.$trigger.attr('rel')
+                $('#download-file-link')
+                  .attr('href', '/shadowftp/file?file=' + encodeURIComponent(url))
+                break;
+
+              case "delete":
+                url = options.$trigger.find('a').attr('rel')
+                if(url == undefined) url = options.$trigger.attr('rel')
+
+
+                var callback = function(){
+                  $.post('/shadowftp/file/delete', {file : encodeURIComponent(url)}, function(data){
+                    $('div[rel="' + url + '"]').remove();
+                    $('a[rel="' + url + '"]').remove();
+                  });
+                }
+
+                showConfirmDialog(
+                  'Delete?', 
+                  'Delete the file \'' + getFilename(url) + '\' ?',
+                  'Delete',
+                   callback,
+                  'Cancel'
+                );     
+  
+                break;
+            }
+        },
+        items: {
+            "download": {type: "downloadFile"}
+        }
+    });
+
+
+    $.contextMenu.types.downloadDir = function(item, opt, root) {
+        $('<a id="download-dir-link">Download</a>').appendTo(this)
+    };
+
+
+    $.contextMenu({
+        selector: '.directory', 
+        callback: function(key, options) {
+
+            switch(key){
+
+              case "download":
+                url = options.$trigger.find('a').attr('rel')
+                if(url == undefined) url = options.$trigger.attr('rel')
+
+                $('#download-dir-link')
+                  .attr('href', '/shadowftp/zip?dir=' + encodeURIComponent(url))
+                break;
+            }
+        },
+        items: {
+            "download": {type: "downloadDir"}
+        }
+    });
+
+    // trigger message to fileTree
+    $("#search-btn").click(function(){
+      $(".filetree-basic").trigger( "searchfile", $("#search").val());
+    });
+
+
+});
+  </script>
+<style>
+.dialog { display: none; }
+
+.filetree-basic {
+    height: 600px;
+    border-top: solid 1px #BBB;
+    border-left: solid 1px #BBB;
+    border-bottom: solid 1px #FFF;
+    border-right: solid 1px #FFF;
+    background: #FFF;
+    overflow: auto;
+    padding: 5px;
+}
+
+.navbar-fixed-top {
+    padding-right: 3em;
+}
+
+li.context-menu-item.context-menu-hover a {
+  text-decoration: none !important;
+  color: white !important;
+}
+
+</style>
+</head>
+<body>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#" style="padding-left: 2em">Shadow File Browser</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <div class="nav navbar-nav navbar-right" style="margin-top: 0.5em">
+	            <h4 id="logged-user" style="margin-right: 1em; display: inline"></h4>
+              <a href="#" id="logout-btn" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom">Sign out</a>
+	        </div>
+        </div><!--/.navbar-collapse -->
+    </nav>
+
+
+  <div class="container-fluid" id="mainpanel">
+      <div class="row">
+         <div class="col-sm-3 col-lg-3">
+            <nav class="navbar navbar-default navbar-fixed-side" style="padding: 0.5em 2em">
+                 <form class="form" style="padding: 0 5px">   
+                    <div class="form-group">
+                        <div class="input-group stylish-input-group">
+                            <input type="text" class="form-control" id="search" name="search" placeholder="Search for file" autocomplete="off" required >
+                            <span class="input-group-addon">
+                                <a type="submit" id="search-btn" href="#">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </a>  
+                            </span>
+                        </div>
+                    </div>
+                  </form>
+
+                  <div id="filetree-container" class="row">
+                      <div class="filetree-basic well"></div>
+                  </div>
+
+            <div class="row">
+                <h4>Right-click on a file or directory to download it.</h4>
+            </div>
+
+            </nav>
+         </div>
+
+
+         <div class="col-sm-9 col-lg-9">
+
+            <div class="row" style="padding: 0.5em 2em">
+                <ol class="breadcrumb breadcrumb-arrow">
+                </ol>
+            </div>
+
+            <div class="row filepanel">
+              
+            </div>
+         </div>
+
+      </div>
+    </div>    
+
+<script src="/shadowftp/static/js/bootstrap.min.js"></script>
+
+
+
+
+<div id="confirmModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        <p id="modal-text"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" id="modal-btn-no" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="modal-btn-yes"></button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+</body>
+</html>
+
