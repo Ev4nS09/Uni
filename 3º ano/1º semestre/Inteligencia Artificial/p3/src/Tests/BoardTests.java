@@ -126,7 +126,7 @@ public class BoardTests{
         Ilayout.ID array[][] = {
             {Ilayout.ID.X,          Ilayout.ID.X,           Ilayout.ID.Blank,       Ilayout.ID.Blank},
             {Ilayout.ID.O,          Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
-            {Ilayout.ID.O,          Ilayout.ID.Blank,       Ilayout.ID.Blank,     Ilayout.ID.Blank},
+            {Ilayout.ID.O,          Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
             {Ilayout.ID.Blank,      Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
             };
 
