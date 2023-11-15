@@ -1,15 +1,17 @@
 <template >
 	<div>
 		<Menu />	
-		<!-- BEGIN MICROPOSTS -->
-
-
-
-
-		<!-- END MICROPOSTS -->
-
+			<div v-for="micropost in methods.microposts" :key="micropost.id" class="container">
+				<div style="word-wrap: break-word" class = "container-xl my-5 border border-1 p-1 rounded-2"> 
+      				<div class = "col d-flex justify-content-start align-items-center p-2">
+        				<img class = "border-2 border-light rounded-2" src="images\silly_cat.jpg" height="60" width="60">
+        				<h1 class="ps-2 text-white">{{micropost.name}}</h1>
+        				<h5 class="ps-3 pt-2 text-white">created at {{micropost.created_at}}</h5>
+						<h6 class="ps-3 pt-2 text-white opacity-50">updated at {{micropost.updated_at}}</h6>
+					</div>
+				</div>
+			</div>
 		<Footer />
-
 	</div>
 </template>
 
@@ -51,7 +53,7 @@ export default {
 
 	},
 	methods: {
-		
+		microposts: this.setup()[2].actions.getMicropostsDB()
 	},
 	computed: {
 
