@@ -224,8 +224,8 @@ public class BoardTests{
     public void Children1Test(){
 
         Ilayout.ID array[][] = {
-            {Ilayout.ID.X,      Ilayout.ID.X,     Ilayout.ID.X,     Ilayout.ID.O},
-            {Ilayout.ID.O,      Ilayout.ID.X,     Ilayout.ID.X,     Ilayout.ID.X},
+            {Ilayout.ID.X,      Ilayout.ID.X,     Ilayout.ID.X,         Ilayout.ID.O},
+            {Ilayout.ID.O,      Ilayout.ID.X,     Ilayout.ID.X,         Ilayout.ID.X},
             {Ilayout.ID.O,      Ilayout.ID.O,     Ilayout.ID.Blank,     Ilayout.ID.O},
             {Ilayout.ID.O,      Ilayout.ID.X,     Ilayout.ID.Blank,     Ilayout.ID.Blank},
             };

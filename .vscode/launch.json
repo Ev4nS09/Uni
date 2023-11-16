@@ -9,6 +9,13 @@
             "name": "Console",
             "request": "launch",
             "mainClass": "Console.Console",
+            "projectName": "Uni_7700760a"
+        },
+        {
+            "type": "java",
+            "name": "Console",
+            "request": "launch",
+            "mainClass": "Console.Console",
             "projectName": "Uni_a1dac52d"
         },
         {

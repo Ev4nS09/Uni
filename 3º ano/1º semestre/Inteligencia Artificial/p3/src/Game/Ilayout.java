@@ -45,6 +45,12 @@ public interface Ilayout {
     */
     public List<Ilayout> children ();
 
+    public double getHeuristic();
+
+    public double getEvaluation();
+
+    public int getBoardSize();
+
     @Override
     public boolean equals(Object layout);
 

@@ -62,7 +62,7 @@ public class Console {
         	board.move(position);
  
         } else {
-        	position = XAgent.play(board);
+        	position = MinMaxAgente.play(board);
         	board.move(position);
         }
     }

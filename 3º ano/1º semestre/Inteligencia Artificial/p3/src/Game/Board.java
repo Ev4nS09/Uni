@@ -52,9 +52,10 @@ public class Board implements Ilayout,Cloneable{
         if(this.gameOver = checkWinner())
              this.winner = this.playersTurn;
 
-        this.playersTurn = (this.playersTurn == ID.X) ? ID.O : ID.X;
+        this.playersTurn = getOpositePlayer();
         setCurrentMoveCount();
     }
+
 
     private void setCurrentMoveCount() {
         int result = 0;
@@ -75,6 +76,10 @@ public class Board implements Ilayout,Cloneable{
         }
         return X == O ? ID.O : ID.X;
     } 
+
+    private ID getOpositePlayer(){
+        return (this.playersTurn == ID.X) ? ID.O : ID.X;
+    }
 
     /**
      * Set the cells to be blank and load the available moves (all the moves are
@@ -103,7 +108,11 @@ public class Board implements Ilayout,Cloneable{
         initialize();
     }
 
-    private boolean checkWinner(int index, int range, int jump){
+    public int getBoardSize(){
+        return rc;
+    }
+
+    private boolean analyseWinner(int index, int range, int jump){
         for(int j = index; range >= 0; j += jump){
             if(!isCurrentTurn(board[j/rows][j%rows]))
                 break;
@@ -115,16 +124,16 @@ public class Board implements Ilayout,Cloneable{
 
     private boolean checkWinner(){
         for(int i = 0; i < rc; i++){
-            if(i + k - 1 < columns && checkWinner(i, k,1)) // Cheks if there is a horizontal line of k IDs
+            if(i + k - 1 < columns && analyseWinner(i, k,1)) // Cheks if there is a horizontal line of k IDs
                 return true;
 
-            if(i + (k-1)*rows < rc && checkWinner(i, k, rows)) // Cheks if there is a vertical line of k IDs
+            if(i + (k-1)*rows < rc && analyseWinner(i, k, rows)) // Cheks if there is a vertical line of k IDs
                 return true;
 
-            if(i + (k-1) < columns && i + (k-1)*rows + (k-1) < rc && checkWinner(i, k, rows + 1)) // Cheks if there is a right diagonal line of k IDs
+            if(i + (k-1) < columns && i + (k-1)*rows + (k-1) < rc && analyseWinner(i, k, rows + 1)) // Cheks if there is a right diagonal line of k IDs
                 return true;  
 
-            if(i - (k-1) >= 0 && i + (k-1)*rows - (k-1) < rc && checkWinner(i, k, rows - 1)) // Cheks if there is a left diagonal line of k IDs
+            if(i - (k-1) >= 0 && i + (k-1)*rows - (k-1) < rc && analyseWinner(i, k, rows - 1)) // Cheks if there is a left diagonal line of k IDs
                 return true; 
         }
         return false;
@@ -301,5 +310,25 @@ public class Board implements Ilayout,Cloneable{
 
     public boolean isCurrentTurn(ID turn){
         return turn.name().equals(getTurn().name());
+    }
+
+    private double getHeuristic(ID turn){
+        int result = 0;
+        int count = 0;
+        for(int i = 0; i < rc; i++){
+            if(board[i/rows][i%rows] == turn)
+                result = Math.max(++count, result);
+            else
+                count = 0;
+        }
+        return result;
+    }
+
+    public double getHeuristic(){
+        return getHeuristic(playersTurn);
+    }
+
+    public double getEvaluation(){
+        return getHeuristic(playersTurn) - getHeuristic(getOpositePlayer());
     }
 }
