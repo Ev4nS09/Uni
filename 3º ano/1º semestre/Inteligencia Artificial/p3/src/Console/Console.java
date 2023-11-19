@@ -57,8 +57,8 @@ public class Console {
     	int position;
     	
         if (board.getTurn() == Ilayout.ID.X) {
-        	position=getHumanMove();
-        	//position = XAgent.play(board);
+        	// position=getHumanMove();
+        	position = MinMaxAgente.play(board);
         	board.move(position);
  
         } else {
@@ -109,9 +109,8 @@ public class Console {
 
     public static void main(String[] args){
         Board board = new Board(4, 4, 4);
-        Board board2 = (Board) board.clone();
 
-    	final int repetitions=3;
+    	final int repetitions=5;
     	long times = 0;
     	for(int i=0; i<repetitions; i++) {
             Console game = new Console();

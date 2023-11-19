@@ -77,8 +77,12 @@ public class Board implements Ilayout,Cloneable{
         return X == O ? ID.O : ID.X;
     } 
 
+    private ID getOpositePlayer(ID turn){
+        return (turn == ID.X) ? ID.O : ID.X;
+    }
+
     private ID getOpositePlayer(){
-        return (this.playersTurn == ID.X) ? ID.O : ID.X;
+        return getOpositePlayer(this.playersTurn);
     }
 
     /**
@@ -133,7 +137,7 @@ public class Board implements Ilayout,Cloneable{
             if(i + (k-1) < columns && i + (k-1)*rows + (k-1) < rc && analyseWinner(i, k, rows + 1)) // Cheks if there is a right diagonal line of k IDs
                 return true;  
 
-            if(i - (k-1) >= 0 && i + (k-1)*rows - (k-1) < rc && analyseWinner(i, k, rows - 1)) // Cheks if there is a left diagonal line of k IDs
+            if(i%columns - (k-1) >= 0 && i + (k-1)*rows - (k-1) < rc && analyseWinner(i, k, rows - 1)) // Cheks if there is a left diagonal line of k IDs
                 return true; 
         }
         return false;
@@ -312,16 +316,37 @@ public class Board implements Ilayout,Cloneable{
         return turn.name().equals(getTurn().name());
     }
 
-    private double getHeuristic(ID turn){
+
+    private double checkAllPotentialWins(int index, ID turn){
         int result = 0;
-        int count = 0;
-        for(int i = 0; i < rc; i++){
-            if(board[i/rows][i%rows] == turn)
-                result = Math.max(++count, result);
-            else
-                count = 0;
+        int row = index / rows;
+        int column = index % columns;
+        for(int j = Math.max(0, index - k); j < Math.min(rc, index + k); j++){
+            for(int p = j; p < p + this.k && p < (row+1) * rows; p++){
+                if(board[p/rows][p/columns] != getOpositePlayer(turn)){
+                    result++;
+                    break;
+                }
+            }
         }
+        for(int j = Math.max(index%columns, index - k); j < Math.min(rc, index + k); j+=rows){
+            for(int p = j; p < p + this.k; p++){
+                if(board[p/rows][p/columns] != getOpositePlayer(turn)){
+                    result++;
+                    break;
+                }
+            }
+        }
+    }
+
+    private double getHeuristic(ID turn){
+        double result = 0;
+        for(int i = 0; i < rc; i++)
+            if(board[i/rows][i%columns] == turn)
+                result += checkAllPotentialWins(i, turn);
+            
         return result;
+
     }
 
     public double getHeuristic(){
@@ -329,6 +354,6 @@ public class Board implements Ilayout,Cloneable{
     }
 
     public double getEvaluation(){
-        return getHeuristic(playersTurn) - getHeuristic(getOpositePlayer());
+        return getHeuristic() - getHeuristic(getOpositePlayer());
     }
 }

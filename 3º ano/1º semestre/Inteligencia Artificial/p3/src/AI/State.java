@@ -2,6 +2,7 @@ package AI;
 
 import java.util.*;
 import Game.*;
+import Game.Ilayout.ID;
 
 /** State representes a "node" that instead of going forward it goes back.
  * @author Afonso Rio, Daniel Andrade 
