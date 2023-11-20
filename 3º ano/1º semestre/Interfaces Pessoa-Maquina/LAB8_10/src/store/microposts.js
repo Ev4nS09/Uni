@@ -26,7 +26,7 @@ export const useMicropostsStore = defineStore({
     }, 
     actions: {
         addMicroposts(microposts){
-            this.microposts = microposts
+            microposts.forEach(element => this.microposts.push(element))
         },
         addMicropost(micropost){
             this.microposts = [...this.microposts, micropost]
@@ -46,7 +46,7 @@ export const useMicropostsStore = defineStore({
         },     
         async getMicropostsDB() {
 			try {
-				const response = await fetch(`http://daw.deei.fct.ualg.pt/~76943/LAB8_10/api/microposts.php`)
+				const response = await fetch(`http://daw.deei.fct.ualg.pt/~a76943/LAB8_10/api/microposts.php`)
 				const data = await response.json()
                 this.addMicroposts(data)
                 return true
@@ -58,7 +58,7 @@ export const useMicropostsStore = defineStore({
 		},
         async addMicropostDB(newMicropost) {
 			try {
-				const response = await fetch(`http://daw.deei.fct.ualg.pt/~76943/LAB8_10/api/microposts.php?session_id=${newMicropost.session_id}`, {
+				const response = await fetch(`http://daw.deei.fct.ualg.pt/~a76943/LAB8_10/api/microposts.php?session_id=${newMicropost.session_id}`, {
 					method: 'POST',
 					body: JSON.stringify(newMicropost.post),
 					headers: { 'Content-type': 'application/json; charset=UTF-8' },
@@ -75,7 +75,7 @@ export const useMicropostsStore = defineStore({
 		},
         async updateMicropostDB(micropost) {
 			try {
-				const response = await fetch(`http://daw.deei.fct.ualg.pt/~76943/LAB8_10/api/microposts.php?micropost_id=${micropost.post_id}&session_id=${micropost.session_id}`, {
+				const response = await fetch(`http://daw.deei.fct.ualg.pt/~a76943/LAB8_10/api/microposts.php?micropost_id=${micropost.post_id}&session_id=${micropost.session_id}`, {
 					method: 'PUT',
 					body: JSON.stringify(micropost.post),
                     headers: { 'Content-type': 'application/json; charset=UTF-8' },
@@ -93,7 +93,7 @@ export const useMicropostsStore = defineStore({
 		},
 		async deleteMicropostDB(micropost) {
 			try {
-                await fetch(`http://daw.deei.fct.ualg.pt/~76943/LAB8_10/api/microposts.php?micropost_id=${micropost.id}&session_id=${micropost.session_id}`, {
+                await fetch(`http://daw.deei.fct.ualg.pt/~a76943/LAB8_10/api/microposts.php?micropost_id=${micropost.id}&session_id=${micropost.session_id}`, {
                     method: 'DELETE',                
                 })
                 this.deleteMicropost(micropost.id)
