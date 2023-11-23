@@ -252,5 +252,84 @@ public class BoardTests{
 
         assertTrue(listEquals(children, childrenTest));
     }
+
+    @Test
+    public void horizontalSymetricTest(){
+        Ilayout.ID array[][] = {
+            {Ilayout.ID.X,      Ilayout.ID.Blank,     Ilayout.ID.Blank,},
+            {Ilayout.ID.O,      Ilayout.ID.X,         Ilayout.ID.Blank,},
+            {Ilayout.ID.O,      Ilayout.ID.Blank,     Ilayout.ID.X},
+            };
+
+        Ilayout.ID arrayHorizontal[][] = {
+            {Ilayout.ID.Blank,      Ilayout.ID.Blank,     Ilayout.ID.X,},
+            {Ilayout.ID.Blank,      Ilayout.ID.X,         Ilayout.ID.O,},
+            {Ilayout.ID.X,          Ilayout.ID.Blank,     Ilayout.ID.O},
+            };
+
+        Board board = new Board(array, 3);
+        Board boardHorizontal = new Board(arrayHorizontal, 3);
+
+        assertTrue(board.equals(boardHorizontal));
+    }
+
+    @Test
+    public void verticalSymetricTest(){
+        Ilayout.ID array[][] = {
+            {Ilayout.ID.X,      Ilayout.ID.Blank,     Ilayout.ID.Blank,},
+            {Ilayout.ID.O,      Ilayout.ID.X,         Ilayout.ID.Blank,},
+            {Ilayout.ID.O,      Ilayout.ID.Blank,     Ilayout.ID.X},
+            };
+
+        Ilayout.ID arrayVertical[][] = {
+            {Ilayout.ID.O,      Ilayout.ID.Blank,     Ilayout.ID.X,},
+            {Ilayout.ID.O,      Ilayout.ID.X,         Ilayout.ID.Blank,},
+            {Ilayout.ID.X,      Ilayout.ID.Blank,     Ilayout.ID.Blank},
+            };
+
+        Board board = new Board(array, 3);
+        Board boardVerical = new Board(arrayVertical, 3);
+
+        assertTrue(board.equals(boardVerical));
+    }
+
+    @Test
+    public void diagonalRightSymetricTest(){
+        Ilayout.ID array[][] = {
+            {Ilayout.ID.X,      Ilayout.ID.Blank,     Ilayout.ID.Blank,},
+            {Ilayout.ID.O,      Ilayout.ID.X,         Ilayout.ID.Blank,},
+            {Ilayout.ID.O,      Ilayout.ID.Blank,     Ilayout.ID.X},
+            };
+
+        Ilayout.ID arrayDiagonal[][] = {
+            {Ilayout.ID.X,          Ilayout.ID.Blank,     Ilayout.ID.Blank,},
+            {Ilayout.ID.Blank,      Ilayout.ID.X,         Ilayout.ID.Blank,},
+            {Ilayout.ID.O,          Ilayout.ID.O,         Ilayout.ID.X},
+            };
+
+        Board board = new Board(array, 3);
+        Board boardDiagonal = new Board(arrayDiagonal, 3);
+
+        assertTrue(board.equals(boardDiagonal));
+    }
     
+    @Test
+    public void diagonalLeftSymetricTest(){
+        Ilayout.ID array[][] = {
+            {Ilayout.ID.X,      Ilayout.ID.Blank,     Ilayout.ID.Blank,},
+            {Ilayout.ID.O,      Ilayout.ID.X,         Ilayout.ID.Blank,},
+            {Ilayout.ID.O,      Ilayout.ID.Blank,     Ilayout.ID.X},
+            };
+
+        Ilayout.ID arrayDiagonal[][] = {
+            {Ilayout.ID.X,      Ilayout.ID.O,     Ilayout.ID.O,},
+            {Ilayout.ID.Blank,  Ilayout.ID.X,     Ilayout.ID.Blank,},
+            {Ilayout.ID.Blank,  Ilayout.ID.Blank, Ilayout.ID.X},
+            };
+
+        Board board = new Board(array, 3);
+        Board boardDiagonal = new Board(arrayDiagonal, 3);
+
+        assertTrue(board.equals(boardDiagonal));
+    }
 }

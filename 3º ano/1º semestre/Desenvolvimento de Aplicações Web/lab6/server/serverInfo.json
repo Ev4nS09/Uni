@@ -1,0 +1,5 @@
+{
+    "smtp" : {
+        "host" : "smtp.office365.com", "port" : 587,
+        "auth" : {"user" : "a76943@ualg.pt", "pass" : "#Jeronimo692305" } }
+}

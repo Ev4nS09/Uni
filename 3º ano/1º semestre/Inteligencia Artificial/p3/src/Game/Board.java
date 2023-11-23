@@ -18,6 +18,8 @@ public class Board implements Ilayout,Cloneable{
     private ID playersTurn;
     private ID winner;
     private HashSet<Integer> movesAvailable;
+    private int hashIndex;
+
 
     private int moveCount;
     private boolean gameOver;
@@ -36,6 +38,7 @@ public class Board implements Ilayout,Cloneable{
 
         board = new ID[this.rows][this.columns];
         movesAvailable = new HashSet<>();
+        hashIndex = hashCode();
 
         reset();
     }
@@ -54,6 +57,7 @@ public class Board implements Ilayout,Cloneable{
 
         this.playersTurn = getOpositePlayer();
         setCurrentMoveCount();
+        hashIndex = hashCode();
     }
 
 
@@ -118,7 +122,7 @@ public class Board implements Ilayout,Cloneable{
 
     private boolean analyseWinner(int index, int range, int jump){
         for(int j = index; range >= 0; j += jump){
-            if(!isCurrentTurn(board[j/rows][j%rows]))
+            if(!isCurrentTurn(board[j/rows][j%columns]))
                 break;
             if(--range == 0)
                 return true;
@@ -128,16 +132,16 @@ public class Board implements Ilayout,Cloneable{
 
     private boolean checkWinner(){
         for(int i = 0; i < rc; i++){
-            if(i + k - 1 < columns && analyseWinner(i, k,1)) // Cheks if there is a horizontal line of k IDs
+            if(i % columns + (k-1) < columns && analyseWinner(i, k,1)) // Cheks if there is a horizontal line of k IDs
                 return true;
 
-            if(i + (k-1)*rows < rc && analyseWinner(i, k, rows)) // Cheks if there is a vertical line of k IDs
+            if(i / rows + (k-1) < rows && analyseWinner(i, k, rows)) // Cheks if there is a vertical line of k IDs
                 return true;
 
-            if(i + (k-1) < columns && i + (k-1)*rows + (k-1) < rc && analyseWinner(i, k, rows + 1)) // Cheks if there is a right diagonal line of k IDs
+            if(i % columns + (k-1) < columns && i / rows + (k-1) < rows && analyseWinner(i, k, rows + 1)) // Cheks if there is a right diagonal line of k IDs
                 return true;  
 
-            if(i%columns - (k-1) >= 0 && i + (k-1)*rows - (k-1) < rc && analyseWinner(i, k, rows - 1)) // Cheks if there is a left diagonal line of k IDs
+            if(i % columns - (k-1) >= 0 && i / rows + (k-1) < rows && analyseWinner(i, k, rows - 1)) // Cheks if there is a left diagonal line of k IDs
                 return true; 
         }
         return false;
@@ -286,7 +290,72 @@ public class Board implements Ilayout,Cloneable{
         }
         return result;
      }
+
+     public boolean isHorizontalSymetric(Board board){
+        for(int i = 0; i < rows; i++)
+            for(int j = 0; j < columns/2; j++)
+                if(this.board[i][j] != board.board[i][columns-1 - j])
+                    return false;
+        return true;
+     }
+
+    public boolean isVerticalSymetric(Board board){
+        for(int i = 0; i < rows/2; i++)
+            for(int j = 0; j < columns; j++)
+                if(this.board[i][j] != board.board[rows - 1 - i][j])
+                    return false;
+        return true;
+     }
+
+    public boolean isDiagonalRightSymetric(Board board){
+        for(int i = 0; i < rows/2; i++)
+            for(int j = 0; j < columns/2; j++)
+                if(this.board[i][j] != board.board[Math.abs(columns - 1 - j)][Math.abs(rows - 1 - i)])
+                    return false;
+        return true;
+     }
+
+    public boolean isDiagonalLeftSymetric(Board board){
+        for(int i = 0; i < rows/2; i++)
+            for(int j = 0; j < columns/2; j++)
+                if(this.board[i][j] != board.board[j][i])
+                    return false;
+        return true;
+    }
+
+    // public boolean isOneRotation(Board board){
+    //     for(int i = 0; i < rows; i++)
+    //         for(int j = 0; j < columns; j++)
+    //             if(this.board[i][j] != board.board[i][Math.abs(columns-1 - j)])
+    //                 return false;
+    //     return true;
+    // }
+
+    // public boolean isTwoRotation(Board board){
+    //     for(int i = 0; i < rows; i++)
+    //         for(int j = 0; j < columns; j++)
+    //             if(this.board[i][j] != board.board[Math.abs(i - (rows-1))][Math.abs(columns-1 - j)])
+    //                 return false;
+    //     return true;
+    // }
+
+    // public boolean isTreeRotation(Board board){
+    //     for(int i = 0; i < rows; i++)
+    //         for(int j = 0; j < columns; j++)
+    //             if(this.board[i][j] != board.board[Math.abs(i - (rows-1))][j])
+    //                 return false;
+    //     return true;
+    // }
+
+    private boolean isEqual(ID[][] board, ID[][] that){
+        for (int y = 0; y < rows; y++) 
+            for (int x = 0; x < columns; x++) 
+            	if (board[x][y] != that[x][y]) 
+                    return false;
+        return true;
+    }
    
+    
 
 	@Override
 	public boolean equals(Object other) {     
@@ -294,16 +363,86 @@ public class Board implements Ilayout,Cloneable{
 		if (other == null) return false;
 		if (getClass() != other.getClass()) return false;
 		Board that = (Board) other;
-		
-		for (int y = 0; y < rows; y++) 
-            for (int x = 0; x < columns; x++) 
-            	if (board[x][y] != that.board[x][y]) return false;
-        return true;
+
+
+        ID[][] currentBoard = this.board;
+
+        for(int i = 0; i < 8; i++){
+            if(isEqual(currentBoard, that.board)) return true;
+            currentBoard = rotateboard(currentBoard);
+            if(i == 3)currentBoard = getHorizontalSymetric(currentBoard);
+        }	
+        
+        return false;
 	}
+
+    private int getBinaryBoardNumber(ID[][] board){
+        String resultX = "";
+        String resultO = "";
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < columns; j++){
+                if(board[i][j] == ID.X){
+                    resultX = "1" + resultX;
+                    resultO = "0" + resultO;          
+                }
+                else if(board[i][j] == ID.O){                    
+                    resultX = "0" + resultX;
+                    resultO = "1" + resultO;   
+                }
+                else{
+                    resultX = "0" + resultX;
+                    resultO = "0" + resultO;           
+                }
+            }
+        }
+        return binaryToDecimal(resultX) + binaryToDecimal(resultO);
+    }
+
+    public ID[][] getHorizontalSymetric(ID[][] board){
+        ID[][] result = new ID[rows][columns];
+        for(int i = 0; i < rows; i++)
+            for(int j = 0; j < columns; j++)
+                result[i][Math.abs(columns-1 - j)] = board[i][j];
+        return result;
+
+    }
+
+    public ID[][] rotateboard(ID[][] board){
+        ID[][] result = new ID[rows][columns];
+        for(int i = 0; i < rows; i++)
+            for(int j = 0; j < columns; j++)
+                result[j][Math.abs(i - (columns-1))] = board[i][j];
+        return result;
+    }
+    
+    public ID[][] rotateboard(){
+        return rotateboard(this.board);
+    }
+
+    public static int binaryToDecimal(String binary){
+        int result = 0;
+        for(int i = 0; i < binary.length(); i++)
+            result += (binary.charAt(i) / 49) * Math.pow(2, (binary.length() - 1) - i);
+        return result;
+    }
+
+    public int getMinFromArray(int[] array){
+        int result = Integer.MAX_VALUE;
+        for(int i = 0; i < array.length; i++)
+            result = Math.min(result, array[i]);
+        return result;
+    }
 		
 	@Override
-	public int hashCode() {
-		return board.hashCode();	
+	public int hashCode() {        
+		int[] binaryArray = new int[8];
+        ID[][] currentBoard = this.board;
+        for(int i = 0; i < 8; i++){
+            binaryArray[i] = getBinaryBoardNumber(currentBoard);
+            currentBoard = rotateboard(currentBoard);
+            if(i == 3) currentBoard = getHorizontalSymetric(currentBoard);
+        }	
+        return getMinFromArray(binaryArray);
 	}
 		
 	public boolean isBlank (int index) {
@@ -313,47 +452,14 @@ public class Board implements Ilayout,Cloneable{
 	}
 
     public boolean isCurrentTurn(ID turn){
-        return turn.name().equals(getTurn().name());
-    }
-
-
-    private double checkAllPotentialWins(int index, ID turn){
-        int result = 0;
-        int row = index / rows;
-        int column = index % columns;
-        for(int j = Math.max(0, index - k); j < Math.min(rc, index + k); j++){
-            for(int p = j; p < p + this.k && p < (row+1) * rows; p++){
-                if(board[p/rows][p/columns] != getOpositePlayer(turn)){
-                    result++;
-                    break;
-                }
-            }
-        }
-        for(int j = Math.max(index%columns, index - k); j < Math.min(rc, index + k); j+=rows){
-            for(int p = j; p < p + this.k; p++){
-                if(board[p/rows][p/columns] != getOpositePlayer(turn)){
-                    result++;
-                    break;
-                }
-            }
-        }
-    }
-
-    private double getHeuristic(ID turn){
-        double result = 0;
-        for(int i = 0; i < rc; i++)
-            if(board[i/rows][i%columns] == turn)
-                result += checkAllPotentialWins(i, turn);
-            
-        return result;
-
+        return turn == getTurn();
     }
 
     public double getHeuristic(){
-        return getHeuristic(playersTurn);
+        return 0;
     }
 
     public double getEvaluation(){
-        return getHeuristic() - getHeuristic(getOpositePlayer());
+        return getHeuristic();
     }
 }

@@ -3,9 +3,7 @@ package Console;
 import Game.*;
 import AI.*;
 
-import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 
 /**
@@ -35,12 +33,21 @@ public class Console {
         board = new Board(rows, columns, k);
     }
 
+    private Console(int rows, int columns, int k){
+        this.rows = rows;
+        this.columns = columns;
+        this.k = k;
+
+        board = new Board(rows, columns, k);
+    }
+
     /**
      * Game on
      */
     private void play () {
         while (true) {
             playMove();
+            // System.out.println(this.board);
             if (board.isGameOver()) {
                 printWinner();
                 break;
@@ -62,6 +69,7 @@ public class Console {
         	board.move(position);
  
         } else {
+            // position=getHumanMove();
         	position = MinMaxAgente.play(board);
         	board.move(position);
         }
@@ -108,18 +116,16 @@ public class Console {
     
 
     public static void main(String[] args){
-        Board board = new Board(4, 4, 4);
 
-    	final int repetitions=5;
+    	final int repetitions=1;
     	long times = 0;
     	for(int i=0; i<repetitions; i++) {
-            Console game = new Console();
+            Console game = new Console(4, 4, 4);
             long startTime = System.currentTimeMillis();
-            game.play();      	
+            game.play();   
             long totalTime = System.currentTimeMillis() - startTime;
             times += totalTime;
         }
-        System.out.println("Av Time: " + times*1.0f/repetitions+ " milisecs"); 
-    
+        System.out.println("Av Time: " + times*1.0f/repetitions+ " milisecs");    
     }
 }
