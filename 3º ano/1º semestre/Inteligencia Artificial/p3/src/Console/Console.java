@@ -117,7 +117,7 @@ public class Console {
 
     public static void main(String[] args){
 
-    	final int repetitions=1;
+    	final int repetitions=50;
     	long times = 0;
     	for(int i=0; i<repetitions; i++) {
             Console game = new Console(4, 4, 4);
