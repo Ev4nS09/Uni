@@ -45,7 +45,7 @@ public interface Ilayout {
     */
     public List<Ilayout> children ();
 
-    public double getHeuristic();
+    public double getHeuristic(ID turn);
 
     public double getEvaluation();
 

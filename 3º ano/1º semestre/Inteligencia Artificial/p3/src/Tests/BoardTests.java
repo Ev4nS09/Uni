@@ -332,4 +332,26 @@ public class BoardTests{
 
         assertTrue(board.equals(boardDiagonal));
     }
+
+    @Test
+    public void Test(){
+        Ilayout.ID array[][] = {
+            {Ilayout.ID.X,          Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
+            {Ilayout.ID.Blank,      Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
+            {Ilayout.ID.Blank,      Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
+            {Ilayout.ID.Blank,      Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
+            };
+
+        Ilayout.ID array2[][] = {
+            {Ilayout.ID.Blank,      Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
+            {Ilayout.ID.Blank,      Ilayout.ID.X,           Ilayout.ID.Blank,       Ilayout.ID.Blank},
+            {Ilayout.ID.Blank,      Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
+            {Ilayout.ID.Blank,      Ilayout.ID.Blank,       Ilayout.ID.Blank,       Ilayout.ID.Blank},
+            };
+
+        Board board = new Board(array, 4);
+        Board board2 = new Board(array2, 4);
+
+        assertEquals(board.getHeuristic(board.getOpositePlayer()), board2.getHeuristic(board.getOpositePlayer()));
+    }
 }

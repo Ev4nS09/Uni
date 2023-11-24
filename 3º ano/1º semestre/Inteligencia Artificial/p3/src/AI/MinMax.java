@@ -2,6 +2,7 @@ package AI;
 
 import java.util.*;
 import Game.*;
+import Game.Ilayout.ID;
 
 public class MinMax {
 
@@ -11,6 +12,7 @@ public class MinMax {
     private HashSet<Ilayout> closed;
     private State current;
     private State goal;
+
 
     private double minmax(State current, int depth, double alpha, double beta, boolean maximizingPlayer){
         if(depth == 0 || current.getLayout().isGameOver())
@@ -23,10 +25,10 @@ public class MinMax {
                 if((depth > SYMETRICDEPTH && !closed.contains(child)) || depth <= SYMETRICDEPTH){
                     if(depth > SYMETRICDEPTH) closed.add(child);
                     double evaluation = minmax(new State(child, null), depth - 1, alpha, beta, false);
+                    maxEvaluation = Math.max(maxEvaluation, evaluation);
                     if(depth == DEPTH && maxEvaluation <= evaluation){
                         this.goal = new State(child, this.current);
                     }
-                    maxEvaluation = Math.max(maxEvaluation, evaluation);
                     alpha = Math.max(alpha, evaluation);
                     if(beta <= alpha)
                         break;
@@ -38,7 +40,6 @@ public class MinMax {
             double minEvaluation = Double.POSITIVE_INFINITY;
             List<Ilayout> children = current.getLayout().children();
             for(Ilayout child : children){
-                // System.out.println(depth);
                 if((depth > SYMETRICDEPTH && !closed.contains(child)) || depth <= SYMETRICDEPTH){
                     if(depth > SYMETRICDEPTH) closed.add(child);
                     double evaluation = minmax(new State(child, null), depth - 1, alpha, beta, true);
@@ -57,8 +58,16 @@ public class MinMax {
         this.current = new State(layout, null);
         this.goal = null;
 
-        minmax(this.current, DEPTH, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
+        ID[][] array = {
+            {Ilayout.ID.X,      Ilayout.ID.X,       Ilayout.ID.O,       Ilayout.ID.O},
+            {Ilayout.ID.X,      Ilayout.ID.X,       Ilayout.ID.X,       Ilayout.ID.O},
+            {Ilayout.ID.O,      Ilayout.ID.X,       Ilayout.ID.O,       Ilayout.ID.O},
+            {Ilayout.ID.Blank,  Ilayout.ID.Blank,   Ilayout.ID.Blank,   Ilayout.ID.X},
+        };
 
+        Board board = new Board(array, 4);
+        minmax(this.current, DEPTH, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
+        if(closed.contains(board)) System.out.println("FUDEU");
         
         return this.goal;
    }

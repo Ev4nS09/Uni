@@ -47,7 +47,8 @@ public class Console {
     private void play () {
         while (true) {
             playMove();
-            // System.out.println(this.board);
+            System.out.println(this.board);
+            System.out.println("++++++++++++++++++++++++");
             if (board.isGameOver()) {
                 printWinner();
                 break;
@@ -117,10 +118,11 @@ public class Console {
 
     public static void main(String[] args){
 
-    	final int repetitions=50;
+    	final int repetitions=1;
+        int x = 4;
     	long times = 0;
     	for(int i=0; i<repetitions; i++) {
-            Console game = new Console(4, 4, 4);
+            Console game = new Console(x, x, x);
             long startTime = System.currentTimeMillis();
             game.play();   
             long totalTime = System.currentTimeMillis() - startTime;

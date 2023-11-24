@@ -60,14 +60,6 @@ class State{
         return this.weight;
     }
     
-    /** Returns this.State layout's H
-     * @param goal Ilayout
-     * @return this.State layout's H
-     */
-    public double getHeuristic(){
-        return this.layout.getHeuristic();
-    }
-    
     /** Returns the sum between this.State weight and it's estimated weight to achive {@code Goal}
      * @param goal Ilayout
      * @return the sum between this.State weight and it's estimated weight to achive {@code Goal}
