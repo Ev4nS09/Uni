@@ -1,8 +1,9 @@
 <template>
-	<div class="logout">
-			<h1 class="success-message" style="text-align: center;">{{message}}</h1>
-	
-	</div>
+    <body class = "logout d-flex bg-black align-items-center vh-100">
+        <div class = "d-gird container-xl rounded-2 border border-2 text-center w-25">
+			<h1 class="text-white">{{message}}</h1>
+        </div>
+    </body>
 </template>
 
 <script>
@@ -31,25 +32,25 @@ export default {
 	methods: {
         setMessage() {
 				if (this.$route.params.id == 1) {
-                this.message = "Success: Post updated"
+                	this.message = "Success: Post updated"
                 } 
 				if (this.$route.params.id == 2) {
-                this.message = "Success: User deleted"
+                	this.message = "Success: User deleted"
                 }
 				if (this.$route.params.id == 3) {
-                this.message = "Success: Post added to database"
+                	this.message = "Success: Post added to database"
                 }
 				if (this.$route.params.id == 4) {
-                this.message = "Welcome! You can now login"
+                	this.message = "Welcome! You can now login"
                 }
 				if (this.$route.params.id == 5) {
-                this.message = "Welcome back " + this.userStore.getUser.name + "!"
+                	this.message = "Welcome back " + this.userStore.getUser.name + "!"
                 }
 				if (this.$route.params.id == 6) {
-                this.message = `Bye ${this.userStore.user.name}, come back soon!`
+                	this.message = "Bye " + this.userStore.getTmpUser.name + ", come back soon!"
                 }	
 				if (this.$route.params.id == 7) {
-                this.message = "Success: Comment added to database"
+                	this.message = "Success: Comment added to database"
                 }																
 				
 				var timeleft = 2;
@@ -68,19 +69,3 @@ export default {
 
 }
 </script>
-
-<style scoped>
-	.logout {
-	margin: 0 auto;
-	max-width: 800px;
-	}
-
-	.success-message {
-	color: #32a95d;
-	}
-
-	.error-message {
-	color: #d33c40;
-	}
-
-</style>

@@ -4,21 +4,23 @@ export const useUserStore = defineStore({
     id: 'user',
     state: () => ({
         user: { 
-        //"id":"1",
-        //"name":"Peter Kinget",
-        //"email":"peter.kinget@gmail.com", 
-        //"session_id":"s47fcd7q4f2tm6rhdgfubn53ov",   
         },
-        tmp_user:{},
+        tmp_user:{
+
+		},
     }),
     getters: {
         getUser: (state) => {
             return state.user;
         },   
+		getTmpUser: (state) => {
+            return state.tmp_user;
+        },   
     }, 
     actions: {
 		loginUser(user){
             this.user = user
+			this.tmp_user = user
         },
         logoutUser(){
             this.user = {}

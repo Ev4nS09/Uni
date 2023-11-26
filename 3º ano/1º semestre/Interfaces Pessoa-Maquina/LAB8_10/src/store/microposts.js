@@ -58,7 +58,7 @@ export const useMicropostsStore = defineStore({
 		},
         async addMicropostDB(newMicropost) {
 			try {
-				const response = await fetch(`http://daw.deei.fct.ualg.pt/~a76943/LAB8_10/api/microposts.php?session_id=${newMicropost.session_id}`, {
+				const response = await fetch(`http://daw.deei.fct.ualg.pt/~a76943/LAB8_10/api/microposts.php?session_id=${newMicropost.user.session_id}`, {
 					method: 'POST',
 					body: JSON.stringify(newMicropost.post),
 					headers: { 'Content-type': 'application/json; charset=UTF-8' },
@@ -75,7 +75,7 @@ export const useMicropostsStore = defineStore({
 		},
         async updateMicropostDB(micropost) {
 			try {
-				const response = await fetch(`http://daw.deei.fct.ualg.pt/~a76943/LAB8_10/api/microposts.php?micropost_id=${micropost.post_id}&session_id=${micropost.session_id}`, {
+				const response = await fetch(`http://daw.deei.fct.ualg.pt/~a76943/LAB8_10/api/microposts.php?micropost_id=${micropost.post.id}&session_id=${micropost.user.session_id}`, {
 					method: 'PUT',
 					body: JSON.stringify(micropost.post),
                     headers: { 'Content-type': 'application/json; charset=UTF-8' },

@@ -6,6 +6,7 @@
 
 <script>
 
+import router from '@/router'
 import { useUserStore } from '@/store/user'
 
 export default {
@@ -29,7 +30,8 @@ export default {
 	},
    
 	mounted() {
-
+		this.userStore.logoutUser()
+		router.push({path: "/message/6"})
 	},
 	
 	computed: {

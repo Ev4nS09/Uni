@@ -1,87 +1,61 @@
 <template>
-    <div>
-        <Menu />
-        <div id="post-form" class="container">
-            <div v-if="!userLoggedIn" >
-                        <h3 style="text-align: center;">Login first </h3>
-            </div>
-            <div  v-else>
-                <h1 style="text-align: center">Comment Post</h1><br><br>
-                <form @submit.prevent="handleSubmit">
-                    <div class="form-group">
-                        <textarea
-                            class="form-control" 
-                            rows="5"
-                            ref="first"
-                            placeholder="Please enter at least 10 characters"
-                            :class="{ 'has-error': submitting && invalidContent }"
-                            v-model="comment.content"
-                            v-autofocus
-                        > 
-                        </textarea>
-                    </div>
-
-
-                    <p v-if="error && submitting" class="alert alert-warning">
-                        fill out all required fields with valid data
-                    </p>
-                    
-                    <p style="float:left;"><button @click="cancel()" class="btn btn-warning">Cancel</button></p>
-                    <p style="float:right;"><button type="submit" class="btn btn-primary">Comment Post</button></p>
-
-                </form>
-            </div>
-        </div>
-        <Footer />
-    </div>
+		<Menu />
+    	<form @submit.prevent="handleSubmit" >
+        	<div class="input-group container-sm pt-4">
+            	<textarea class="form-control bg-black text-white"  v-model="comment.content" placeholder="What's on your mind?" name="content"></textarea>
+            	<button type="submit" class = "btn btn-outline-light d-inline">Comment</button>
+        	</div>
+    	</form>
 
 </template>
 
 <script>
-import Footer from '@/components/Footer.vue'
 import Menu from '@/components/Menu.vue'
+import router from '@/router'
 
 import { useCommentsStore } from '@/store/comments'
+import { useMicropostsStore } from '@/store/microposts'
 import { useUserStore } from '@/store/user'
 
 export default {  
 
 	setup() {
 		const userStore = useUserStore()
+        const micropostsStore = useMicropostsStore()
 		const commentsStore = useCommentsStore()
-		return { userStore, commentsStore }
+		return { userStore, micropostsStore, commentsStore }
   	},
 
     components: {
-		Footer,
         Menu
 	},	
 	data() {
       return {
 		submitting: false,
 		error: false,
+        post: this.micropostsStore.getMicropost(this.$route.params.id),
         comment: {
             content: '',                             
         },
-		user: {
-			id: '', 
-			name: '', 
-			email: '', 
-			session_id: ''
-		},
+		user: this.userStore.getUser,
+        userLoggedIn: Object.keys(this.userStore.getUser).length !== 0,
       }
     },
 
 	mounted() {
-
+        if(!this.userLoggedIn)
+            router.push({path:"/"}) 
+		if(this.user.id === this.post.user_id)
+			router.push({path:"/"}) 
 	},
 	
 	methods: {
-     
+		async handleSubmit(){
+            await this.commentsStore.addCommentDB(this)
+			router.push({path:"/message/7"}) 
+        }
 	},
 
-
-	
 	computed: {
 
 	},
