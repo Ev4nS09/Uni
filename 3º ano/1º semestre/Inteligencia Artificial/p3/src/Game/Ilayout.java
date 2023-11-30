@@ -15,6 +15,8 @@ public interface Ilayout {
      */
     public boolean move (int index);
 
+    public int getLastMove();
+
 
     /**
      * @return          true if the game is over; false otherwise
@@ -37,6 +39,8 @@ public interface Ilayout {
      * @return          the empty cells
      */
     public HashSet<Integer> getAvailableMoves();
+
+    public int size();
         
 
     /**
@@ -47,9 +51,7 @@ public interface Ilayout {
 
     public double getHeuristic(ID turn);
 
-    public double getEvaluation();
-
-    public int getBoardSize();
+    public double getEvaluation(ID turn);
 
     @Override
     public boolean equals(Object layout);

@@ -64,8 +64,8 @@ class State{
      * @param goal Ilayout
      * @return the sum between this.State weight and it's estimated weight to achive {@code Goal}
      */
-    public double getEvaluation(){
-        return this.layout.getEvaluation();
+    public double getEvaluation(ID turn){
+        return this.layout.getEvaluation(turn);
     }
     
     /** Verifys if this.State's layout the goal

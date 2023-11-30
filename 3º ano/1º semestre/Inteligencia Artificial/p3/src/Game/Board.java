@@ -18,18 +18,19 @@ public class Board implements Ilayout,Cloneable{
     private ID playersTurn;
     private ID winner;
     private HashSet<Integer> movesAvailable;
-    private int hashIndex;
 
 
     private int moveCount;
+    private int lastMove;
     private boolean gameOver;
+
     
     public Board(int rows, int columns, int k) {
 
         if(rows != columns)
             throw new InputMismatchException("The number of rows must be equal to the number of columns.");
         if(rows < k)
-            throw new InputMismatchException("K must be less than the rows of the board.");
+            throw new InputMismatchException("K must be less or equal than the rows of the board.");
         
         this.rows = rows;
         this.columns = columns;
@@ -38,7 +39,6 @@ public class Board implements Ilayout,Cloneable{
 
         board = new ID[this.rows][this.columns];
         movesAvailable = new HashSet<>();
-        hashIndex = hashCode();
 
         reset();
     }
@@ -57,7 +57,6 @@ public class Board implements Ilayout,Cloneable{
 
         this.playersTurn = getOpositePlayer();
         setCurrentMoveCount();
-        hashIndex = hashCode();
     }
 
 
@@ -113,10 +112,11 @@ public class Board implements Ilayout,Cloneable{
         this.gameOver = false;
         this.playersTurn = ID.X;
         this.winner = ID.Blank;
+        this.lastMove = -1;
         initialize();
     }
 
-    public int getBoardSize(){
+    public int size(){
         return rc;
     }
 
@@ -175,7 +175,8 @@ public class Board implements Ilayout,Cloneable{
         }
 
         moveCount++;
-        movesAvailable.remove(y * rows + x);
+        lastMove = rows * y + x;
+        movesAvailable.remove(lastMove);
 
         // The game is a draw.
         if (moveCount == rc) {
@@ -190,6 +191,10 @@ public class Board implements Ilayout,Cloneable{
 
         playersTurn = (playersTurn == ID.X) ? ID.O : ID.X;
         return true;
+    }
+
+    public int getLastMove(){
+        return this.lastMove;
     }
 
     /**
@@ -286,8 +291,9 @@ public class Board implements Ilayout,Cloneable{
         for(int i = 0; i < rc; i++){
             Board clone = (Board) this.clone();
             if(clone.move(i))
-                result.add(clone);   
+                result.add(clone);
         }
+
         return result;
      }
 
@@ -299,21 +305,40 @@ public class Board implements Ilayout,Cloneable{
         return true;
     }
 
+    private boolean checkRotation(ID[][] board, ID[][] that){
+        boolean x0 = true;
+        boolean x1 = true;
+        boolean x2 = true;
+        boolean x3 = true;
+
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < columns; j++){
+                if(that[i][j] != board[i][j])
+                    x0 = false;
+                if(that[j][Math.abs(i - (columns-1))] != board[i][j])
+                    x1 = false;
+                if(that[Math.abs(i - (columns-1))][Math.abs(j - (columns-1))] != board[i][j])
+                    x2 = false;
+                if(that[Math.abs(j - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))] != board[i][j])
+                    x3 = false;
+                if(!x0 && !x1 && !x2 && !x3)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
 
 	@Override
 	public boolean equals(Object other) {     
 		if (other == this) return true;
 		if (other == null) return false;
 		if (getClass() != other.getClass()) return false;
+
 		Board that = (Board) other;
-
-
-        ID[][] currentBoard = this.board;
-        for(int i = 0; i < 8; i++){
-            if(isEqual(currentBoard, that.board)) return true;
-            currentBoard = rotateboard(currentBoard);
-            if(i == 3)currentBoard = getHorizontalSymetric(currentBoard);
-        }	
+        if(that.rc != this.rc) return false;
+        if(checkRotation(this.board, that.board) || checkRotation(getHorizontalSymetric(this.board), that.board)) return true;
         
         return false;
 	}
@@ -398,7 +423,7 @@ public class Board implements Ilayout,Cloneable{
     }
 
 
-    private int getPotentialWinner(ID turn, int index, int jump){
+    private int getPotentialWin(ID turn, int index, int jump){
         int result = 0;
         int count = 0;
         for(int i = index; i <= Math.min(index + ((this.k-1) * jump), rc-1); i+=jump){
@@ -422,21 +447,31 @@ public class Board implements Ilayout,Cloneable{
         int result = 0;
         for(int i = 0; i < rc; i++){
             if(board[i/rows][i%columns] == turn){
-                result += getPotentialWinner(turn, i, 1);
-                result += getPotentialWinner(turn, i, rows);
-                result += getPotentialWinner(turn, i, rows + 1);
-                result += getPotentialWinner(turn, i, rows - 1);
+                result += getPotentialWin(turn, i, 1);
+                result += getPotentialWin(turn, i, rows);
+                result += getPotentialWin(turn, i, rows + 1);
+                result += getPotentialWin(turn, i, rows - 1);
             }
         }
         return result;
     }
 
-    public double getEvaluation(){
-        if (!this.isGameOver())
-            return getHeuristic(playersTurn) - getHeuristic(getOpositePlayer());
-        if (this.winner == this.playersTurn)
-            return Double.MAX_VALUE;
-        else
-            return Double.MIN_VALUE;
+    public double getEvaluation(ID turn){
+        if (this.winner == turn)
+            return 999999;
+        else if(this.winner == getOpositePlayer(turn))
+            return -999999; 
+
+        return getHeuristic(turn) - getHeuristic(getOpositePlayer(turn));
+    }
+
+    public void getAllBoards(ID[][] b){
+        ID[][] currentBoard = b;
+        for(int i = 0; i < 8; i++){
+            currentBoard = rotateboard(currentBoard);
+            if(i == 3) currentBoard = getHorizontalSymetric(currentBoard);
+            System.out.println(new Board(currentBoard, b.length));
+            System.out.println();
+        }	
     }
 }

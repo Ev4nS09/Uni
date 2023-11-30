@@ -1,6 +1,7 @@
 package Console;
 
 import Game.*;
+import Game.Ilayout.ID;
 import AI.*;
 
 import java.util.*;
@@ -47,7 +48,7 @@ public class Console {
     private void play () {
         while (true) {
             playMove();
-            // System.out.println(this.board);
+            // System.out.println(this.board + "\n");
             // System.out.println("++++++++++++++++++++++++");
             if (board.isGameOver()) {
                 printWinner();
@@ -64,14 +65,14 @@ public class Console {
     private void playMove () {
     	int position;
     	
-        if (board.getTurn() == Ilayout.ID.X) {
+        if (board.getTurn() == ID.X) {
         	// position=getHumanMove();
-        	position = MinMaxAgente.play(board);
+        	position = MinMaxAgente.play(board, ID.X);
         	board.move(position);
  
         } else {
             // position=getHumanMove();
-        	position = MinMaxAgente.play(board);
+        	position = MinMaxAgente.play(board, ID.O);
         	board.move(position);
         }
     }
@@ -117,7 +118,13 @@ public class Console {
     
 
     public static void main(String[] args){
-
+        // ID[][] array = {
+        //     {ID.X, ID.Blank, ID.Blank},
+        //     {ID.Blank, ID.Blank, ID.Blank},
+        //     {ID.Blank, ID.Blank, ID.Blank}
+        // };
+        // new Board(3, 3, 3).getAllBoards(array);
+        // System.exit(0);
     	final int repetitions=1;
         int x = 4;
     	long times = 0;

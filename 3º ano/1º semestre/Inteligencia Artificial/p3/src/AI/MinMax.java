@@ -6,32 +6,36 @@ import Game.Ilayout.ID;
 
 public class MinMax {
 
-    private final int DEPTH = 8;
-    private final int SYMETRICDEPTH = 4;
+    private final int DEPTH = 4;
+    private final int SYMETRICDEPTH = -1;
     
-    private HashSet<Ilayout> closed;
     private State current;
-    private State goal;
+    private int goal;
+    private ID turn;
 
 
     private double minmax(State current, int depth, double alpha, double beta, boolean maximizingPlayer){
-        if(depth == 0 || current.getLayout().isGameOver())
-            return current.getEvaluation();
+        HashSet<Ilayout> closed = new HashSet<>();
+
+        if(depth == 0 || current.isGameOver()){
+            double evaluation = current.getEvaluation(this.turn);
+            return maximizingPlayer ? evaluation + depth : evaluation - depth;
+        }
         
         if(maximizingPlayer){
             double maxEvaluation = Double.NEGATIVE_INFINITY;
             List<Ilayout> children = current.getLayout().children();
-            for(Ilayout child : children){
-                if((depth > SYMETRICDEPTH && !closed.contains(child)) || depth <= SYMETRICDEPTH){
-                    if(depth > SYMETRICDEPTH) closed.add(child);
-                    double evaluation = minmax(new State(child, null), depth - 1, alpha, beta, false);
+            for (Ilayout child : children){
+                if(depth < SYMETRICDEPTH || !closed.contains(child)){
+                    closed.add(child);
+                    double evaluation = minmax(new State(child, current), depth - 1, alpha, beta, false);
                     if(depth == DEPTH && maxEvaluation < evaluation){
-                        this.goal = new State(child, this.current);
+                        this.goal = child.getLastMove();
                     }
                     maxEvaluation = Math.max(maxEvaluation, evaluation);
                     alpha = Math.max(alpha, evaluation);
                     if(beta <= alpha)
-                        break;
+                        return maxEvaluation;
                 }
             }
             return maxEvaluation;
@@ -39,40 +43,28 @@ public class MinMax {
         else{
             double minEvaluation = Double.POSITIVE_INFINITY;
             List<Ilayout> children = current.getLayout().children();
-            for(Ilayout child : children){
-                if((depth > SYMETRICDEPTH && !closed.contains(child)) || depth <= SYMETRICDEPTH){
-                    if(depth > SYMETRICDEPTH) closed.add(child);
-                    double evaluation = minmax(new State(child, null), depth - 1, alpha, beta, true);
+            for (Ilayout child : children){
+                if(depth < SYMETRICDEPTH || !closed.contains(child)){
+                    closed.add(child);
+                    double evaluation = minmax(new State(child, current), depth - 1, alpha, beta, true);
                     minEvaluation = Math.min(minEvaluation, evaluation);
                     beta = Math.min(beta, evaluation);
                     if(beta <= alpha)
-                        break;
+                        return minEvaluation;
+                
                 }
             }
             return minEvaluation;
         }
     }
 
-    public State getBestPlay(Ilayout layout){
-        this.closed = new HashSet<>();
+    public int getBestPlay(Ilayout layout, ID turn){
         this.current = new State(layout, null);
-        this.goal = null;
+        this.goal = -1;
+        this.turn = turn;
 
-
-        // if(layout.getAvailableMoves().size() < 5) SYMETRICDEPTH = DEPTH;
-        // ID[][] array = {
-        //     {Ilayout.ID.X,      Ilayout.ID.X,       Ilayout.ID.O,       Ilayout.ID.O},
-        //     {Ilayout.ID.X,      Ilayout.ID.X,       Ilayout.ID.X,       Ilayout.ID.O},
-        //     {Ilayout.ID.O,      Ilayout.ID.X,       Ilayout.ID.O,       Ilayout.ID.O},
-        //     {Ilayout.ID.Blank,  Ilayout.ID.Blank,   Ilayout.ID.Blank,   Ilayout.ID.X},
-        // };
-
-        // Board board = new Board(array, 4);
         minmax(this.current, DEPTH, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
-        // if(closed.contains(board)) System.out.println("FUDEU");
-
-
-        
+    
         return this.goal;
    }
 }
