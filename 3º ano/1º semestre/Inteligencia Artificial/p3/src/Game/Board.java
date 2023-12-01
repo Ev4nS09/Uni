@@ -305,28 +305,51 @@ public class Board implements Ilayout,Cloneable{
         return true;
     }
 
-    private boolean checkRotation(ID[][] board, ID[][] that){
-        boolean x0 = true;
-        boolean x1 = true;
-        boolean x2 = true;
-        boolean x3 = true;
+    private boolean checkAllPossibleSolutions(ID[][] board, ID[][] that){
+        boolean rotation0 = true;
+        boolean rotation1 = true;
+        boolean rotation2 = true;
+        boolean rotation3 = true;
+
+        boolean symetric0 = true;
+        boolean symetric1 = true;
+        boolean symetric2 = true;
+        boolean symetric3 = true;
 
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < columns; j++){
                 if(that[i][j] != board[i][j])
-                    x0 = false;
+                    rotation0 = false;
                 if(that[j][Math.abs(i - (columns-1))] != board[i][j])
-                    x1 = false;
+                    rotation1 = false;
                 if(that[Math.abs(i - (columns-1))][Math.abs(j - (columns-1))] != board[i][j])
-                    x2 = false;
+                    rotation2 = false;
                 if(that[Math.abs(j - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))] != board[i][j])
-                    x3 = false;
-                if(!x0 && !x1 && !x2 && !x3)
+                    rotation3 = false;
+
+                if(that[i][Math.abs(columns-1 - j)] != board[i][j])
+                    symetric0 = false;
+                if(that[Math.abs(columns-1 - j)][Math.abs(i - (columns-1))] != board[i][j])
+                    symetric1 = false;
+                if(that[Math.abs(i - (columns-1))][Math.abs(Math.abs(columns-1 - j) - (columns-1))] != board[i][j])
+                    symetric2 = false;
+                if(that[Math.abs(Math.abs(columns-1 - j) - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))] != board[i][j])
+                    symetric3 = false;
+            
+                if(!rotation0 && !rotation1 && !rotation2 && !rotation3 && !symetric0 && !symetric1 && !symetric2 && !symetric3)
                     return false;
             }
         }
 
         return true;
+    }
+
+    public ID[][] getHorizontalSymetric(ID[][] board){
+        ID[][] result = new ID[rows][columns];
+        for(int i = 0; i < rows; i++)
+            for(int j = 0; j < columns; j++)
+                result[i][Math.abs(columns-1 - j)] = board[i][j];
+        return result;
     }
 
 
@@ -338,40 +361,39 @@ public class Board implements Ilayout,Cloneable{
 
 		Board that = (Board) other;
         if(that.rc != this.rc) return false;
-        if(checkRotation(this.board, that.board) || checkRotation(getHorizontalSymetric(this.board), that.board)) return true;
+        if(checkAllPossibleSolutions(this.board, that.board)) return true;
         
         return false;
 	}
 
-    private int getBinaryBoardNumber(ID[][] board){
-        String resultX = "";
-        String resultO = "";
-        for(int i = 0; i < rows; i++){
-            for(int j = 0; j < columns; j++){
-                if(board[i][j] == ID.X){
-                    resultX = "1" + resultX;
-                    resultO = "0" + resultO;          
-                }
-                else if(board[i][j] == ID.O){                    
-                    resultX = "0" + resultX;
-                    resultO = "1" + resultO;   
-                }
-                else{
-                    resultX = "0" + resultX;
-                    resultO = "0" + resultO;           
-                }
-            }
-        }
-        return binaryToDecimal(resultX) + binaryToDecimal(resultO);
+    private int getValue(ID id, int i){
+        int result = 0;
+
+        if(id == ID.X)
+            result = (int) Math.pow(2, (rc - 1) - i);
+
+        else if(id == ID.O)
+            result = (int) Math.pow(3, (rc - 1) - i);
+
+        return result;
     }
 
-    public ID[][] getHorizontalSymetric(ID[][] board){
-        ID[][] result = new ID[rows][columns];
-        for(int i = 0; i < rows; i++)
-            for(int j = 0; j < columns; j++)
-                result[i][Math.abs(columns-1 - j)] = board[i][j];
-        return result;
+    private int[] getHashArray(){
+        int result[] = new int[8];
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < columns; j++){
+                result[0] += getValue(this.board[i][j], i);
+                result[1] += getValue(this.board[j][Math.abs(i - (columns-1))], i);
+                result[2] += getValue(this.board[Math.abs(i - (columns-1))][Math.abs(j - (columns-1))], i);
+                result[3] += getValue(this.board[Math.abs(j - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))], i);
 
+                result[4] += getValue(this.board[i][Math.abs(columns-1 - j)], i);
+                result[5] += getValue(this.board[Math.abs(columns-1 - j)][Math.abs(i - (columns-1))], i);
+                result[6] += getValue(this.board[Math.abs(i - (columns-1))][Math.abs(Math.abs(columns-1 - j) - (columns-1))], i);
+                result[7] += getValue(this.board[Math.abs(Math.abs(columns-1 - j) - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))], i);
+            }
+        }
+        return result;
     }
 
     public ID[][] rotateboard(ID[][] board){
@@ -386,13 +408,6 @@ public class Board implements Ilayout,Cloneable{
         return rotateboard(this.board);
     }
 
-    public static int binaryToDecimal(String binary){
-        int result = 0;
-        for(int i = 0; i < binary.length(); i++)
-            result += (binary.charAt(i) / 49) * Math.pow(2, (binary.length() - 1) - i);
-        return result;
-    }
-
     public int getMinFromArray(int[] array){
         int result = Integer.MAX_VALUE;
         for(int i = 0; i < array.length; i++)
@@ -400,16 +415,10 @@ public class Board implements Ilayout,Cloneable{
         return result;
     }
 		
+
 	@Override
 	public int hashCode() {        
-		int[] binaryArray = new int[8];
-        ID[][] currentBoard = this.board;
-        for(int i = 0; i < 8; i++){
-            binaryArray[i] = getBinaryBoardNumber(currentBoard);
-            currentBoard = rotateboard(currentBoard);
-            if(i == 3) currentBoard = getHorizontalSymetric(currentBoard);
-        }	
-        return getMinFromArray(binaryArray);
+        return getMinFromArray(getHashArray());
 	}
 		
 	public boolean isBlank (int index) {
@@ -464,14 +473,46 @@ public class Board implements Ilayout,Cloneable{
 
         return getHeuristic(turn) - getHeuristic(getOpositePlayer(turn));
     }
-
-    public void getAllBoards(ID[][] b){
-        ID[][] currentBoard = b;
-        for(int i = 0; i < 8; i++){
-            currentBoard = rotateboard(currentBoard);
-            if(i == 3) currentBoard = getHorizontalSymetric(currentBoard);
-            System.out.println(new Board(currentBoard, b.length));
-            System.out.println();
-        }	
-    }
 }
+
+//     public void getAllBoards(ID[][] b){
+//         ID[][] currentBoard = b;
+//         for(int i = 0; i < 8; i++){
+//             currentBoard = rotateboard(currentBoard);
+//             if(i == 3) currentBoard = getHorizontalSymetric(currentBoard);
+//             System.out.println(new Board(currentBoard, b.length));
+//             System.out.println();
+//         }	
+//     }
+// }
+
+
+    // private int getBinaryBoardNumber(ID[][] board){
+    //     String resultX = "";
+    //     String resultO = "";
+    //     for(int i = 0; i < rows; i++){
+    //         for(int j = 0; j < columns; j++){
+    //             if(board[i][j] == ID.X){
+    //                 resultX = "1" + resultX;
+    //                 resultO = "0" + resultO;          
+    //             }
+    //             else if(board[i][j] == ID.O){                    
+    //                 resultX = "0" + resultX;
+    //                 resultO = "1" + resultO;   
+    //             }
+    //             else{
+    //                 resultX = "0" + resultX;
+    //                 resultO = "0" + resultO;           
+    //             }
+    //         }
+    //     }
+    //     return binaryToDecimal(resultX) + binaryToDecimal(resultO);
+    // }
+
+    //     public static int binaryToDecimal(String binary){
+    //     int result = 0;
+    //     for(int i = 0; i < binary.length(); i++)
+    //         result += (binary.charAt(i) / 49) * Math.pow(2, (binary.length() - 1) - i);
+    //     return result;
+    // }
+
