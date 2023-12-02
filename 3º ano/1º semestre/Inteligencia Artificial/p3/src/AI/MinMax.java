@@ -6,59 +6,56 @@ import Game.Ilayout.ID;
 
 public class MinMax {
 
-    private final int DEPTH = 8;
-    private final int SYMETRICDEPTH = -1;
+    private final int DEPTH = 6;
     
+    private HashMap<Ilayout, Double> closed = new HashMap<>();
     private State current;
     private int goal;
     private ID turn;
 
 
     private double minmax(State current, int depth, double alpha, double beta, boolean maximizingPlayer){
-        HashSet<Ilayout> closed = new HashSet<>();
 
         if(depth == 0 || current.isGameOver()){
-            double evaluation = current.getEvaluation(this.turn);
-            return maximizingPlayer ? evaluation + depth : evaluation - depth;
+            Object evaluation = closed.get(current.getLayout());
+            if(evaluation == null){
+                evaluation = current.getEvaluation(turn);
+                closed.put(current.getLayout(), (double) evaluation);
+            }
+            return maximizingPlayer ? ((double)evaluation) + depth : ((double)evaluation) - depth;
         }
         
         if(maximizingPlayer){
             double maxEvaluation = Double.NEGATIVE_INFINITY;
             List<Ilayout> children = current.getLayout().children();
             for (Ilayout child : children){
-                if(!closed.contains(child)){
-                    closed.add(child);
-                    double evaluation = minmax(new State(child, current), depth - 1, alpha, beta, false);
-                    if(depth == DEPTH && maxEvaluation < evaluation){
-                        this.goal = child.getLastMove();
-                    }
-                    maxEvaluation = Math.max(maxEvaluation, evaluation);
-                    alpha = Math.max(alpha, evaluation);
-                    if(beta <= alpha)
-                        break;
+                double evaluation = minmax(new State(child, current), depth - 1, alpha, beta, false);
+                if(depth == DEPTH && maxEvaluation < evaluation){
+                    this.goal = child.getLastMove();
                 }
+                maxEvaluation = Math.max(maxEvaluation, evaluation);
+                alpha = Math.max(alpha, evaluation);
+                if(beta <= alpha)
+                    break;
             }
             return maxEvaluation;
         }
         else{
             double minEvaluation = Double.POSITIVE_INFINITY;
             List<Ilayout> children = current.getLayout().children();
-            for (Ilayout child : children){
-                if(!closed.contains(child)){
-                    closed.add(child);
-                    double evaluation = minmax(new State(child, current), depth - 1, alpha, beta, true);
-                    minEvaluation = Math.min(minEvaluation, evaluation);
-                    beta = Math.min(beta, evaluation);
-                    if(beta <= alpha)
-                        break;
-                
-                }
+            for(Ilayout child : children){
+                double evaluation = minmax(new State(child, current), depth - 1, alpha, beta, true);
+                minEvaluation = Math.min(minEvaluation, evaluation);
+                beta = Math.min(beta, evaluation);
+                if(beta <= alpha)
+                    break;
             }
             return minEvaluation;
         }
     }
 
     public int getBestPlay(Ilayout layout, ID turn){
+        this.closed = new HashMap<>();
         this.current = new State(layout, null);
         this.goal = -1;
         this.turn = turn;

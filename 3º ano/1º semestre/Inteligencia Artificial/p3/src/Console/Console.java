@@ -48,7 +48,7 @@ public class Console {
     private void play () {
         while (true) {
             playMove();
-            System.out.println(this.board + "\n");
+            // System.out.println(this.board + "\n");
             // System.out.println("++++++++++++++++++++++++");
             if (board.isGameOver()) {
                 printWinner();

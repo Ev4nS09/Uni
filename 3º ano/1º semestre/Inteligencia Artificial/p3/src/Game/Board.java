@@ -18,10 +18,11 @@ public class Board implements Ilayout,Cloneable{
     private ID playersTurn;
     private ID winner;
     private HashSet<Integer> movesAvailable;
-
+    private List<Integer> movesNotAvaible;
 
     private int moveCount;
     private int lastMove;
+    private int hashIndex;
     private boolean gameOver;
 
     
@@ -39,6 +40,7 @@ public class Board implements Ilayout,Cloneable{
 
         board = new ID[this.rows][this.columns];
         movesAvailable = new HashSet<>();
+        movesNotAvaible = new LinkedList<>();
 
         reset();
     }
@@ -113,11 +115,12 @@ public class Board implements Ilayout,Cloneable{
         this.playersTurn = ID.X;
         this.winner = ID.Blank;
         this.lastMove = -1;
+        this.hashIndex = 0;
         initialize();
     }
 
     public int size(){
-        return rc;
+        return this.rc;
     }
 
     private boolean analyseWinner(int index, int range, int jump){
@@ -177,6 +180,7 @@ public class Board implements Ilayout,Cloneable{
         moveCount++;
         lastMove = rows * y + x;
         movesAvailable.remove(lastMove);
+        movesNotAvaible.add(lastMove);
 
         // The game is a draw.
         if (moveCount == rc) {
@@ -189,6 +193,7 @@ public class Board implements Ilayout,Cloneable{
             gameOver = true;
         }
 
+        hashIndex += Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - lastMove);
         playersTurn = (playersTurn == ID.X) ? ID.O : ID.X;
         return true;
     }
@@ -244,15 +249,22 @@ public class Board implements Ilayout,Cloneable{
 	        b.board = new ID[rows][columns];
             
 	        for (int i = 0; i < this.rows; i++)
-	        	for (int j = 0; j < this.columns; j++)
-	        		b.board[i][j] = this.board[i][j];
-                    
-	        b.playersTurn       = this.playersTurn;
-	        b.winner            = this.winner;
-	        b.movesAvailable    = new HashSet<Integer>();
+	        	System.arraycopy(this.board[i], 0, b.board[i], 0, columns);
+
+            b.rows = this.rows;
+            b.columns = this.columns;
+            b.k = this.k;    
+            b.rc = this.rc;
+	        b.playersTurn = this.playersTurn;
+	        b.winner = this.winner;
+	        b.movesAvailable = new HashSet<Integer>();
+            b.movesNotAvaible = new ArrayList<Integer>();
 	        b.movesAvailable.addAll(this.movesAvailable);
-	        b.moveCount         = this.moveCount;
-	        b.gameOver          = this.gameOver;
+            b.movesNotAvaible.addAll(this.movesNotAvaible);
+            b.lastMove = this.lastMove;
+	        b.moveCount = this.moveCount;
+	        b.gameOver = this.gameOver;
+            b.hashIndex = this.hashIndex;
 	        return b;
     	}
     	catch (Exception e) {
@@ -288,9 +300,9 @@ public class Board implements Ilayout,Cloneable{
      */   
      public List<Ilayout> children() {
  		List<Ilayout> result = new LinkedList<>();
-        for(int i = 0; i < rc; i++){
+        for(Integer index : movesAvailable){
             Board clone = (Board) this.clone();
-            if(clone.move(i))
+            if(clone.move(index))
                 result.add(clone);
         }
 
@@ -318,6 +330,7 @@ public class Board implements Ilayout,Cloneable{
 
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < columns; j++){
+                
                 if(that[i][j] != board[i][j])
                     rotation0 = false;
                 if(that[j][Math.abs(i - (columns-1))] != board[i][j])
@@ -344,15 +357,6 @@ public class Board implements Ilayout,Cloneable{
         return true;
     }
 
-    public ID[][] getHorizontalSymetric(ID[][] board){
-        ID[][] result = new ID[rows][columns];
-        for(int i = 0; i < rows; i++)
-            for(int j = 0; j < columns; j++)
-                result[i][Math.abs(columns-1 - j)] = board[i][j];
-        return result;
-    }
-
-
 	@Override
 	public boolean equals(Object other) {     
 		if (other == this) return true;
@@ -365,60 +369,10 @@ public class Board implements Ilayout,Cloneable{
         
         return false;
 	}
-
-    private int getValue(ID id, int i){
-        int result = 0;
-
-        if(id == ID.X)
-            result = (int) Math.pow(2, (rc - 1) - i);
-
-        else if(id == ID.O)
-            result = (int) Math.pow(3, (rc - 1) - i);
-
-        return result;
-    }
-
-    private int[] getHashArray(){
-        int result[] = new int[8];
-        for(int i = 0; i < rows; i++){
-            for(int j = 0; j < columns; j++){
-                result[0] += getValue(this.board[i][j], i);
-                result[1] += getValue(this.board[j][Math.abs(i - (columns-1))], i);
-                result[2] += getValue(this.board[Math.abs(i - (columns-1))][Math.abs(j - (columns-1))], i);
-                result[3] += getValue(this.board[Math.abs(j - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))], i);
-
-                result[4] += getValue(this.board[i][Math.abs(columns-1 - j)], i);
-                result[5] += getValue(this.board[Math.abs(columns-1 - j)][Math.abs(i - (columns-1))], i);
-                result[6] += getValue(this.board[Math.abs(i - (columns-1))][Math.abs(Math.abs(columns-1 - j) - (columns-1))], i);
-                result[7] += getValue(this.board[Math.abs(Math.abs(columns-1 - j) - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))], i);
-            }
-        }
-        return result;
-    }
-
-    public ID[][] rotateboard(ID[][] board){
-        ID[][] result = new ID[rows][columns];
-        for(int i = 0; i < rows; i++)
-            for(int j = 0; j < columns; j++)
-                result[j][Math.abs(i - (columns-1))] = board[i][j];
-        return result;
-    }
-    
-    public ID[][] rotateboard(){
-        return rotateboard(this.board);
-    }
-
-    public int getMinFromArray(int[] array){
-        int result = Integer.MAX_VALUE;
-        for(int i = 0; i < array.length; i++)
-            result = Math.min(result, array[i]);
-        return result;
-    }
-		
-
+	
 	@Override
 	public int hashCode() {        
-        return getMinFromArray(getHashArray());
+        return hashIndex;
 	}
 		
 	public boolean isBlank (int index) {
@@ -454,12 +408,12 @@ public class Board implements Ilayout,Cloneable{
 
     public double getHeuristic(ID turn){
         int result = 0;
-        for(int i = 0; i < rc; i++){
-            if(board[i/rows][i%columns] == turn){
-                result += getPotentialWin(turn, i, 1);
-                result += getPotentialWin(turn, i, rows);
-                result += getPotentialWin(turn, i, rows + 1);
-                result += getPotentialWin(turn, i, rows - 1);
+        for(Integer index : movesNotAvaible){
+            if(board[index/rows][index%columns] == turn){
+                result += getPotentialWin(turn, index, 1);
+                result += getPotentialWin(turn, index, rows);
+                result += getPotentialWin(turn, index, rows + 1);
+                result += getPotentialWin(turn, index, rows - 1);
             }
         }
         return result;
@@ -516,3 +470,96 @@ public class Board implements Ilayout,Cloneable{
     //     return result;
     // }
 
+    //     private int getValue(ID id, int i){
+    //     int result = 0;
+
+    //     if(id == ID.X)
+    //         result = (int) Math.pow(2, (rc - 1) - i);
+
+    //     else if(id == ID.O)
+    //         result = (int) Math.pow(3, (rc - 1) - i);
+
+    //     return result;
+    // }
+
+    // private int[] getHashArray(){
+    //     int result[] = new int[8];
+    //     for(int i = 0; i < rows; i++){
+    //         for(int j = 0; j < columns; j++){
+    //             result[0] += getValue(this.board[i][j], i);
+    //             result[1] += getValue(this.board[j][Math.abs(i - (columns-1))], i);
+    //             result[2] += getValue(this.board[Math.abs(i - (columns-1))][Math.abs(j - (columns-1))], i);
+    //             result[3] += getValue(this.board[Math.abs(j - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))], i);
+
+    //             result[4] += getValue(this.board[i][Math.abs(columns-1 - j)], i);
+    //             result[5] += getValue(this.board[Math.abs(columns-1 - j)][Math.abs(i - (columns-1))], i);
+    //             result[6] += getValue(this.board[Math.abs(i - (columns-1))][Math.abs(Math.abs(columns-1 - j) - (columns-1))], i);
+    //             result[7] += getValue(this.board[Math.abs(Math.abs(columns-1 - j) - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))], i);
+    //         }
+    //     }
+    //     return result;
+    // }
+
+        // public ID[][] rotateboard(ID[][] board){
+    //     ID[][] result = new ID[rows][columns];
+    //     for(int i = 0; i < rows; i++)
+    //         for(int j = 0; j < columns; j++)
+    //             result[j][Math.abs(i - (columns-1))] = board[i][j];
+    //     return result;
+    // }
+    
+    // public ID[][] rotateboard(){
+    //     return rotateboard(this.board);
+    // }
+
+    //     public int getMinFromArray(int[] array){
+    //     int result = Integer.MAX_VALUE;
+    //     for(int i = 0; i < array.length; i++)
+    //         result = Math.min(result, array[i]);
+    //     return result;
+    // }
+
+    //     public ID[][] getHorizontalSymetric(ID[][] board){
+    //     ID[][] result = new ID[rows][columns];
+    //     for(int i = 0; i < rows; i++)
+    //         for(int j = 0; j < columns; j++)
+    //             result[i][Math.abs(columns-1 - j)] = board[i][j];
+    //     return result;
+    // }
+
+    //     private int getValue(ID id, int i){
+    //     int result = 0;
+
+    //     if(id == ID.X)
+    //         result = (int) Math.pow(2, (rc - 1) - i);
+
+    //     else if(id == ID.O)
+    //         result = (int) Math.pow(3, (rc - 1) - i);
+
+    //     return result;
+    // }
+
+    // private int[] getHashArray(){
+    //     int result[] = new int[8];
+    //     for(int i = 0; i < rows; i++){
+    //         for(int j = 0; j < columns; j++){
+    //             result[0] += getValue(this.board[i][j], i);
+    //             result[1] += getValue(this.board[j][Math.abs(i - (columns-1))], i);
+    //             result[2] += getValue(this.board[Math.abs(i - (columns-1))][Math.abs(j - (columns-1))], i);
+    //             result[3] += getValue(this.board[Math.abs(j - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))], i);
+
+    //             result[4] += getValue(this.board[i][Math.abs(columns-1 - j)], i);
+    //             result[5] += getValue(this.board[Math.abs(columns-1 - j)][Math.abs(i - (columns-1))], i);
+    //             result[6] += getValue(this.board[Math.abs(i - (columns-1))][Math.abs(Math.abs(columns-1 - j) - (columns-1))], i);
+    //             result[7] += getValue(this.board[Math.abs(Math.abs(columns-1 - j) - (columns-1))][Math.abs(Math.abs(i - (columns-1)) - (columns-1))], i);
+    //         }
+    //     }
+    //     return result;
+    // }
+
+    // public int getMinFromArray(int[] array){
+    //     int result = Integer.MAX_VALUE;
+    //     for(int i = 0; i < array.length; i++)
+    //         result = Math.min(result, array[i]);
+    //     return result;
+    // }
