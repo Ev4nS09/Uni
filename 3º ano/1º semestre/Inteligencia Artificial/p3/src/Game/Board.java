@@ -150,6 +150,47 @@ public class Board implements Ilayout,Cloneable{
         return false;
     }
 
+    private int rotateIndex(int index){
+        int r = index / rows;
+        int c = index % columns;
+        return (rows * c) + Math.abs(r - (columns-1));
+    }
+
+    private int symetricIndex(int index){
+        int r = index / rows;
+        int c = index % columns;
+        return (rows * r) +  Math.abs(columns-1 - c);
+    }
+
+    private int getHashIndex(int lastMove){
+        int result = (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - lastMove);
+        int currentIndex = lastMove;
+
+        currentIndex = rotateIndex(currentIndex);
+        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+        currentIndex = rotateIndex(currentIndex);
+        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+        currentIndex = rotateIndex(currentIndex);
+        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+        
+        currentIndex = symetricIndex(lastMove);
+        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+        currentIndex = rotateIndex(currentIndex);
+        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+        currentIndex = rotateIndex(currentIndex);
+        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+        currentIndex = rotateIndex(currentIndex);
+        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+        return result;
+    }
+
     /**
      * Places an X or an O on the specified index depending on whose turn it is.
      * @param index     position starts in 0 and increases from left to right and from top to bottom
@@ -265,6 +306,7 @@ public class Board implements Ilayout,Cloneable{
 	        b.moveCount = this.moveCount;
 	        b.gameOver = this.gameOver;
             b.hashIndex = this.hashIndex;
+
 	        return b;
     	}
     	catch (Exception e) {

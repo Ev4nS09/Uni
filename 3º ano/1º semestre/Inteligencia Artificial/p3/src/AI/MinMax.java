@@ -6,9 +6,9 @@ import Game.Ilayout.ID;
 
 public class MinMax {
 
-    private final int DEPTH = 6;
+    private final int DEPTH = 8;
     
-    private HashMap<Ilayout, Double> closed = new HashMap<>();
+    private HashMap<Ilayout, Double> cache = new HashMap<>();
     private State current;
     private int goal;
     private ID turn;
@@ -17,12 +17,14 @@ public class MinMax {
     private double minmax(State current, int depth, double alpha, double beta, boolean maximizingPlayer){
 
         if(depth == 0 || current.isGameOver()){
-            Object evaluation = closed.get(current.getLayout());
-            if(evaluation == null){
+            double evaluation = 0;
+            if(cache.containsKey(current.getLayout()))
+                evaluation = cache.get(current.getLayout());
+            else{
                 evaluation = current.getEvaluation(turn);
-                closed.put(current.getLayout(), (double) evaluation);
+                cache.put(current.getLayout(), evaluation);
             }
-            return maximizingPlayer ? ((double)evaluation) + depth : ((double)evaluation) - depth;
+            return maximizingPlayer ? evaluation + depth : evaluation - depth;
         }
         
         if(maximizingPlayer){
@@ -55,7 +57,7 @@ public class MinMax {
     }
 
     public int getBestPlay(Ilayout layout, ID turn){
-        this.closed = new HashMap<>();
+        this.cache = new HashMap<>();
         this.current = new State(layout, null);
         this.goal = -1;
         this.turn = turn;
