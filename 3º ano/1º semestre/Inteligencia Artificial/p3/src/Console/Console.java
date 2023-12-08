@@ -10,8 +10,6 @@ import java.util.*;
 /**
  * For playing in the console.
  */
-
-
 public class Console {
     private Board board;
     private int rows;
@@ -67,12 +65,12 @@ public class Console {
     	
         if (board.getTurn() == ID.X) {
         	// position=getHumanMove();
-        	position = MinMaxAgente.play(board, ID.X);
+        	position = MinMaxAgent.play(board, ID.X, 6);
         	board.move(position);
  
         } else {
             // position=getHumanMove();
-        	position = MinMaxAgente.play(board, ID.O);
+        	position = MinMaxAgent.play(board, ID.O, 6);
         	board.move(position);
         }
     }

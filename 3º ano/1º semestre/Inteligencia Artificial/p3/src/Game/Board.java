@@ -1,17 +1,18 @@
 package Game;
 
 import java.util.*;
-// import java.util.ArrayList;
 
-/**
- * Represents a board.
+/** Tic-tac-toe Board that implements Ilayout.
+ * @author Afonso Rio, Daniel Andrade 
+ * @version 1.0 04/12/2023
+ * @see MinMax
  */
 public class Board implements Ilayout,Cloneable{
 
     private int rows;
     private int columns;
     private int rc;
-    private int k;
+    private int winningCondition;
 
     
     private ID[][] board;
@@ -26,17 +27,22 @@ public class Board implements Ilayout,Cloneable{
     private boolean gameOver;
 
     
-    public Board(int rows, int columns, int k) {
+    /** Constructor that generates a new board with m {@code rows}, n {@code columns} a k {@code winningCondition}.
+     * @param rows int
+     * @param columns int
+     * @param k int
+     */
+    public Board(int rows, int columns, int winningCondition) {
 
         if(rows != columns)
             throw new InputMismatchException("The number of rows must be equal to the number of columns.");
-        if(rows < k)
+        if(rows < winningCondition)
             throw new InputMismatchException("K must be less or equal than the rows of the board.");
         
         this.rows = rows;
         this.columns = columns;
         this.rc = rows * columns;
-        this.k = k;
+        this.winningCondition = winningCondition;
 
         board = new ID[this.rows][this.columns];
         movesAvailable = new HashSet<>();
@@ -45,6 +51,10 @@ public class Board implements Ilayout,Cloneable{
         reset();
     }
 
+    /** Cunstructor generates a board of an ongoing game.
+     * @param board ID[][]
+     * @param k int
+     */
     public Board(ID[][] board, int k){
         this(board.length, board.length > 0 ? board[0].length : 0, k);
 
@@ -59,9 +69,12 @@ public class Board implements Ilayout,Cloneable{
 
         this.playersTurn = getOpositePlayer();
         setCurrentMoveCount();
+        setAvailableAndNotAvailableMoves();
     }
 
 
+    /** Updates the current move count.
+     */
     private void setCurrentMoveCount() {
         int result = 0;
         for(int i = 0; i < rc; i++)
@@ -70,6 +83,9 @@ public class Board implements Ilayout,Cloneable{
         this.moveCount = result;
     }
 
+    /** Calculates the last turn.
+     * @return the last turn.
+     */
     private ID calculateLastTurn(){
         int X = 0;
         int O = 0;
@@ -82,10 +98,28 @@ public class Board implements Ilayout,Cloneable{
         return X == O ? ID.O : ID.X;
     } 
 
+    /** Updates the current available and not available moves
+     */
+    private void setAvailableAndNotAvailableMoves(){
+        for(int i = 0; i < this.rc; i++){
+            if(this.board[i/rows][i%columns] == ID.Blank)
+                this.movesAvailable.add(i);
+            else
+                this.movesNotAvaible.add(i);
+        }
+            
+    }
+    /** Gets the oposite player.
+     * @param turn ID
+     * @return the oposite player.
+     */
     private ID getOpositePlayer(ID turn){
         return (turn == ID.X) ? ID.O : ID.X;
     }
 
+    /** Gets the oposite player of the current turn.
+     * @return the oposite player of the current turn.
+     */
     public ID getOpositePlayer(){
         return getOpositePlayer(this.playersTurn);
     }
@@ -119,10 +153,19 @@ public class Board implements Ilayout,Cloneable{
         initialize();
     }
 
+    /** Gets the size of the board.
+     * @return the size of the board.
+     */
     public int size(){
         return this.rc;
     }
 
+    /** Returns a boolean that if true, a winner is in the given index. 
+     * @param index int
+     * @param range int
+     * @param jump int
+     * @return a boolean that if true, there is a winner in the index else there ins't a winner in the given index.
+     */
     private boolean analyseWinner(int index, int range, int jump){
         for(int j = index; range >= 0; j += jump){
             if(!isCurrentTurn(board[j/rows][j%columns]))
@@ -133,62 +176,24 @@ public class Board implements Ilayout,Cloneable{
         return false;
     }
 
+    /** Verifies if a winner exists in the board.
+     * @return a boolean that if true a winner is in the board, else the game has no winner.
+     */
     private boolean checkWinner(){
-        for(int i = 0; i < rc; i++){
-            if(i % columns + (k-1) < columns && analyseWinner(i, k,1)) // Cheks if there is a horizontal line of k IDs
+        for(int i : movesNotAvaible){
+            if(i % columns + (winningCondition-1) < columns && analyseWinner(i, winningCondition,1)) // Cheks if there is a horizontal line of k IDs
                 return true;
 
-            if(i / columns + (k-1) < rows && analyseWinner(i, k, rows)) // Cheks if there is a vertical line of k IDs
+            if(i / columns + (winningCondition-1) < rows && analyseWinner(i, winningCondition, rows)) // Cheks if there is a vertical line of k IDs
                 return true;
 
-            if(i % columns + (k-1) < columns && i / rows + (k-1) < rows && analyseWinner(i, k, rows + 1)) // Cheks if there is a right diagonal line of k IDs
+            if(i % columns + (winningCondition-1) < columns && i / rows + (winningCondition-1) < rows && analyseWinner(i, winningCondition, rows + 1)) // Cheks if there is a right diagonal line of k IDs
                 return true;  
 
-            if(i % columns - (k-1) >= 0 && i / rows + (k-1) < rows && analyseWinner(i, k, rows - 1)) // Cheks if there is a left diagonal line of k IDs
+            if(i % columns - (winningCondition-1) >= 0 && i / rows + (winningCondition-1) < rows && analyseWinner(i, winningCondition, rows - 1)) // Cheks if there is a left diagonal line of k IDs
                 return true; 
         }
         return false;
-    }
-
-    private int rotateIndex(int index){
-        int r = index / rows;
-        int c = index % columns;
-        return (rows * c) + Math.abs(r - (columns-1));
-    }
-
-    private int symetricIndex(int index){
-        int r = index / rows;
-        int c = index % columns;
-        return (rows * r) +  Math.abs(columns-1 - c);
-    }
-
-    private int getHashIndex(int lastMove){
-        int result = (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - lastMove);
-        int currentIndex = lastMove;
-
-        currentIndex = rotateIndex(currentIndex);
-        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
-
-        currentIndex = rotateIndex(currentIndex);
-        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
-
-        currentIndex = rotateIndex(currentIndex);
-        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
-
-        
-        currentIndex = symetricIndex(lastMove);
-        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
-
-        currentIndex = rotateIndex(currentIndex);
-        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
-
-        currentIndex = rotateIndex(currentIndex);
-        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
-
-        currentIndex = rotateIndex(currentIndex);
-        result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
-
-        return result;
     }
 
     /**
@@ -239,6 +244,9 @@ public class Board implements Ilayout,Cloneable{
         return true;
     }
 
+    /** Gets the last move of the board.
+     * @return the last move of the board.
+     */
     public int getLastMove(){
         return this.lastMove;
     }
@@ -279,6 +287,10 @@ public class Board implements Ilayout,Cloneable{
         return movesAvailable;
     }
 
+    public List<Integer> getNotAvailableMoves () {
+        return movesNotAvaible;
+    }
+
     
 
     /**
@@ -294,7 +306,7 @@ public class Board implements Ilayout,Cloneable{
 
             b.rows = this.rows;
             b.columns = this.columns;
-            b.k = this.k;    
+            b.winningCondition = this.winningCondition;    
             b.rc = this.rc;
 	        b.playersTurn = this.playersTurn;
 	        b.winner = this.winner;
@@ -351,6 +363,11 @@ public class Board implements Ilayout,Cloneable{
         return result;
      }
 
+     /** Verifies if two board are strictly equal.
+      * @param board ID[][]
+      * @param that ID[][]
+      * @return a boolean if true the two boards are strictly equal, else they are not strictly equal.
+      */
     public boolean isEqual(ID[][] board, ID[][] that){
         for (int y = 0; y < rows; y++) 
             for (int x = 0; x < columns; x++) 
@@ -359,6 +376,11 @@ public class Board implements Ilayout,Cloneable{
         return true;
     }
 
+    /** Verifies if a {@code board} is equal to another {@code board} (Two boards can be equal if you rotate them symetricly or not 4 times).
+     * @param board
+     * @param that
+      * @return a boolean if true the two boards are equal, else they are not equal.
+     */
     private boolean checkAllPossibleSolutions(ID[][] board, ID[][] that){
         boolean rotation0 = true;
         boolean rotation1 = true;
@@ -417,37 +439,55 @@ public class Board implements Ilayout,Cloneable{
         return hashIndex;
 	}
 		
+    /** Verifies if a position in the board is blank
+     * @param index
+     * @return true if the position is blank else returns false
+     */
 	public boolean isBlank (int index) {
 		int x=index/rows;
 		int y=index%rows;
         return (board[x][y] == ID.Blank);
 	}
 
+    /** Verifies if the given turn is the current turn
+     * @param turn ID
+     * @return true if the current turn equals the given turn, else returns false
+     */
     public boolean isCurrentTurn(ID turn){
         return turn == getTurn();
     }
 
 
+    /** Calculates the value of a current postion with a given jump.
+     * @param turn ID
+     * @param index int
+     * @param jump int
+     * @return the winning potential value.
+     */
     private int getPotentialWin(ID turn, int index, int jump){
         int result = 0;
         int count = 0;
-        for(int i = index; i <= Math.min(index + ((this.k-1) * jump), rc-1); i+=jump){
+        for(int i = index; i <= Math.min(index + ((this.winningCondition-1) * jump), rc-1); i+=jump){
             if(getOpositePlayer(turn) == board[i/rows][i%columns])
                 break;
             else if(turn == board[i/rows][i%columns])
                 result++;
             count++;
         }
-        for(int i = index; i >= Math.max(index - ((this.k-1) * jump), 0); i-=jump){
+        for(int i = index; i >= Math.max(index - ((this.winningCondition-1) * jump), 0); i-=jump){
             if(getOpositePlayer(turn) == board[i/rows][i%columns])
                 break;
             else if(turn == board[i/rows][i%columns])
                 result++;
             count++;
         }
-        return count >= this.k ? result : 0;
+        return count >= this.winningCondition ? result : 0;
     }
 
+    /**Calculates the potentional win value of all the moves that have been made.
+     * @param turn ID
+     * @return the potentional win value of all the moves that have been made.
+     */
     public double getHeuristic(ID turn){
         int result = 0;
         for(Integer index : movesNotAvaible){
@@ -461,6 +501,10 @@ public class Board implements Ilayout,Cloneable{
         return result;
     }
 
+    /** Returns the {@code Heuristic} of the given turn minus the {@code Heuristic} of the oposite player.
+     * @param turn ID
+     * @return the {@code Heuristic} of the given turn minus the {@code Heuristic} of the oposite player.
+     */
     public double getEvaluation(ID turn){
         if (this.winner == turn)
             return 999999;
@@ -605,3 +649,47 @@ public class Board implements Ilayout,Cloneable{
     //         result = Math.min(result, array[i]);
     //     return result;
     // }
+
+
+    //     private int getHashIndex(int lastMove){
+    //     int result = (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - lastMove);
+    //     int currentIndex = lastMove;
+
+    //     currentIndex = rotateIndex(currentIndex);
+    //     result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+    //     currentIndex = rotateIndex(currentIndex);
+    //     result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+    //     currentIndex = rotateIndex(currentIndex);
+    //     result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+        
+    //     currentIndex = symetricIndex(lastMove);
+    //     result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+    //     currentIndex = rotateIndex(currentIndex);
+    //     result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+    //     currentIndex = rotateIndex(currentIndex);
+    //     result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+    //     currentIndex = rotateIndex(currentIndex);
+    //     result = Math.min(result, (int) Math.pow(this.playersTurn.ordinal() + 1, (rc - 1) - currentIndex));
+
+    //     return result;
+    // }
+
+    //     private int rotateIndex(int index){
+    //     int r = index / rows;
+    //     int c = index % columns;
+    //     return (rows * c) + Math.abs(r - (columns-1));
+    // }
+
+    // private int symetricIndex(int index){
+    //     int r = index / rows;
+    //     int c = index % columns;
+    //     return (rows * r) +  Math.abs(columns-1 - c);
+    // }
+
+

@@ -6,7 +6,7 @@ import Game.Ilayout.ID;
 
 /** State representes a "node" that instead of going forward it goes back.
  * @author Afonso Rio, Daniel Andrade 
- * @version 1.0 28/10/2023
+ * @version 2.0 04/12/2023
  * @see Ilayout
  */
 class State{

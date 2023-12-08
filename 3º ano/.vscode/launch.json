@@ -2,26 +2,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "java",
-      "name": "Console",
-      "request": "launch",
-      "mainClass": "Console.Console",
-      "projectName": "Uni_7700760a"
-    },
-    {
-      "type": "java",
-      "name": "Console",
-      "request": "launch",
-      "mainClass": "Console.Console",
-      "projectName": "Uni_a1dac52d"
-    },
-    {
-      "type": "java",
-      "name": "Current File",
-      "request": "launch",
-      "mainClass": "${file}"
-    },
-    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",

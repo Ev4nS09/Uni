@@ -2,6 +2,11 @@ package Game;
 
 import java.util.*;
 
+/**This interface represents a layout of a baord game.
+ * @author Afonso Rio
+ * @author Daniel Andrade 
+ * @version 2.0 04/12/2023
+ */
 public interface Ilayout {
 
     public enum ID{Blank, X, O}
@@ -40,17 +45,27 @@ public interface Ilayout {
      */
     public HashSet<Integer> getAvailableMoves();
 
+    /**Returns the size of the board.
+     * @return the size of the board.
+     */
     public int size();
         
-
     /**
      * 
      * @return the children of the receiver.
     */
     public List<Ilayout> children ();
 
+    /** Returns the win potential of the layout.
+     * @param turn ID
+     * @return the heuristic.
+     */
     public double getHeuristic(ID turn);
 
+    /** Returns the heuristic of the given turn minus the heuristic of the oposite player.
+     * @param turn
+     * @return the heuristic of the given turn minus the heuristic of the oposite player.
+     */
     public double getEvaluation(ID turn);
 
     @Override
