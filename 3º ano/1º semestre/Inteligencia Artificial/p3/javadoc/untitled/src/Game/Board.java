@@ -5,7 +5,6 @@ import java.util.*;
 /** Tic-tac-toe Board that implements Ilayout.
  * @author Afonso Rio, Daniel Andrade 
  * @version 1.0 04/12/2023
- * @see MinMax
  */
 public class Board implements Ilayout,Cloneable{
 
@@ -30,7 +29,7 @@ public class Board implements Ilayout,Cloneable{
     /** Constructor that generates a new board with m {@code rows}, n {@code columns} a k {@code winningCondition}.
      * @param rows int
      * @param columns int
-     * @param k int
+     * @param winningCondition int
      */
     public Board(int rows, int columns, int winningCondition) {
 
@@ -53,10 +52,10 @@ public class Board implements Ilayout,Cloneable{
 
     /** Cunstructor generates a board of an ongoing game.
      * @param board ID[][]
-     * @param k int
+     * @param winningCondition int
      */
-    public Board(ID[][] board, int k){
-        this(board.length, board.length > 0 ? board[0].length : 0, k);
+    public Board(ID[][] board, int winningCondition){
+        this(board.length, board.length > 0 ? board[0].length : 0, winningCondition);
 
         if(board.length <= 0 || board[0].length <= 0)
             throw new InputMismatchException("Board must not be empty.");
@@ -356,7 +355,7 @@ public class Board implements Ilayout,Cloneable{
     }
     
      /**
-         * @param cutSymetric boolean
+         * 
          * @return the children of the receiver.
      */   
      public List<Ilayout> children(boolean cutSymetric) {
@@ -370,10 +369,6 @@ public class Board implements Ilayout,Cloneable{
         return result;
      }
 
-    /**
-    * 
-    * @return the children of the receiver.
-     */  
      public List<Ilayout> children() {
         return children(false);
      }
@@ -475,8 +470,10 @@ public class Board implements Ilayout,Cloneable{
 
     /** Calculates the value of a current postion with a given jump.
      * @param turn ID
-     * @param index int
-     * @param jump int
+     * @param row int
+     * @param column int
+     * @param jumpRow int
+     * @param jumpColumn int
      * @return the winning potential value.
      */
     private int getPotentialWin(int row, int column, ID turn, int jumpRow, int jumpColumn){

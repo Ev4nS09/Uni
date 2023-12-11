@@ -1,0 +1,94 @@
+4x4
+------------------------------------------------------
+Depth =  2
+time = 6.9333334 milisecs
+------------------------------------------------------
+Depth =  4
+time = 34.2 milisecs
+------------------------------------------------------
+Depth =  6
+time = 232.56667 milisecs
+------------------------------------------------------
+Depth =  8
+time = 1690.9667 milisecs
+------------------------------------------------------
+Depth =  10
+time =  3800.8 milisecs
+------------------------------------------------------
+Depth =  12
+time = 3236.0334 milisecs
+------------------------------------------------------
+Depth =  14
+time = 2465.4333 milisecs
+------------------------------------------------------
+Depth =  16
+time = 1712.5 milisecs
+------------------------------------------------------
+...
+
+No optimizations
+------------------------------------------------------
+Depth =  2
+time = 9.6 milisecs
+------------------------------------------------------
+Depth =  3
+time = 16.066668 milisecs
+------------------------------------------------------
+Depth =  4
+time = 44.9 milisecs
+------------------------------------------------------
+Depth =  5
+time = 145.0 milisecs
+------------------------------------------------------
+Depth =  6
+time = 500.13333 milisecs
+------------------------------------------------------
+Depth =  7
+time = 2937.1 milisecs
+------------------------------------------------------
+Depth =  8
+time =  7884.6333 milisecs
+------------------------------------------------------
+Depth =  10
+time = 42632.0 milisecs
+------------------------------------------------------
+Depth =  12
+time = 117690.0 milisecs
+------------------------------------------------------
+
+
+no simetria
+
+------------------------------------------------------
+Depth =  2
+time = 8.533334 milisecs
+------------------------------------------------------
+Depth =  4
+time = 35.9 milisecs
+------------------------------------------------------
+Depth =  6
+time = 246.5 milisecs
+------------------------------------------------------
+Depth =  8
+time = 2240.4666 milisecs
+------------------------------------------------------
+Depth =  10
+time = 4370.1333 milisecs
+------------------------------------------------------
+Depth =  12
+time = 3948.5334 milisecs
+------------------------------------------------------
+Depth =  14
+time = 3249.4333 milisecs
+------------------------------------------------------
+Depth =  16
+time = 2361.1667 milisecs
+------------------------------------------------------
+
+é minimizador, escolhe a jogada que leva ao nó filho com o menor valor. Este processo continua até chegar ao nó raiz, representando a melhor jogada possível para o jogador maximizador, considerando as ações do jogador minimizador.
+
+O algoritmo Minimax é eficaz para encontrar a melhor jogada em jogos de decisão com informação completa, onde todas as informações relevantes estão disponíveis. No entanto, pode tornar-se impraticável em jogos mais complexos devido à explosão combinatória do número de estados possíveis. Algumas otimizações, como a poda alfa-beta, são frequentemente utilizadas para tornar o algoritmo mais eficiente.
+
+Esta poda alfa-beta é usada para reduzir a quantidade de nós avaliados numa árvore de decisão, mantendo os mesmos resultados. Acaba por ser bastante útil quando a árvore se torna demasiado complexa. A ideia fundamental da poda alfa-beta é eliminar a avaliação de certos ramos da árvore que sabemos que não levarão a uma solução melhor do que a já encontrada. Os parâmetros "alfa" e "beta" representam intervalos que indicam os valores mínimos e máximos que um jogador maximizador ou minimizador, respetivamente, já encontrou ao longo do caminho.
+
+Ao avaliar os nós da árvore, se um jogador encontra um ramo que leva a uma solução inferior ao intervalo existente (alfa-beta), esse ramo pode ser podado, pois não influenciará a escolha final. Esta eliminação de ramos desnecessários reduz drasticamente o número de nodos a serem avaliados, tornando o algoritmo mais eficiente.

@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "Console",
+      "request": "launch",
+      "mainClass": "Console.Console",
+      "projectName": "3º ano_9a13acce"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",

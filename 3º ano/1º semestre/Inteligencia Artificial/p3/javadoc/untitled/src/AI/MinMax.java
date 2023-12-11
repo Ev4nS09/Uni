@@ -25,9 +25,9 @@ public class MinMax {
     /** Claculates the best move of an {@link Ilayout}.
      * @param current State
      * @param depth int
-     * @param double alpha
-     * @param double beta
-     * @param boolean maximizingPlayer
+     * @param alpha double
+     * @param beta beta
+     * @param maximizingPlayer boolean
      * @return the best move.
      */
     private double minmax(State current, int depth, double alpha, double beta, boolean maximizingPlayer){

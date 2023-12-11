@@ -268,9 +268,8 @@ public class BoardTests{
             };
 
         Board board = new Board(array, 3);
-        Board boardHorizontal = new Board(arrayHorizontal, 3);
 
-        assertTrue(board.equals(boardHorizontal));
+        assertTrue(board.checkAllPossibleSolutions(array, arrayHorizontal));
     }
 
     @Test
@@ -288,9 +287,8 @@ public class BoardTests{
             };
 
         Board board = new Board(array, 3);
-        Board boardVerical = new Board(arrayVertical, 3);
 
-        assertTrue(board.equals(boardVerical));
+        assertTrue(board.checkAllPossibleSolutions(array, arrayVertical));
     }
 
     @Test
@@ -308,9 +306,8 @@ public class BoardTests{
             };
 
         Board board = new Board(array, 3);
-        Board boardDiagonal = new Board(arrayDiagonal, 3);
 
-        assertTrue(board.equals(boardDiagonal));
+        assertTrue(board.checkAllPossibleSolutions(array, arrayDiagonal));
     }
     
     @Test
@@ -328,9 +325,8 @@ public class BoardTests{
             };
 
         Board board = new Board(array, 3);
-        Board boardDiagonal = new Board(arrayDiagonal, 3);
-
-        assertTrue(board.equals(boardDiagonal));
+        
+        assertTrue(board.checkAllPossibleSolutions(array, arrayDiagonal));
     }
 
     @Test

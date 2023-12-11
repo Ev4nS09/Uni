@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"Game","l":"Board"},{"p":"Console","l":"Console"},{"p":"Game","l":"Ilayout.ID"},{"p":"Game","l":"Ilayout"},{"p":"AI","l":"MinMax"},{"p":"AI","l":"MinMaxAgent"},{"p":"AI","l":"XAgent"}];updateSearchResults();
