@@ -160,39 +160,21 @@ public class Board implements Ilayout,Cloneable{
         return this.rc;
     }
 
-    /** Returns a boolean that if true, a winner is in the given index. 
-     * @param index int
-     * @param range int
-     * @param jump int
-     * @return a boolean that if true, there is a winner in the index else there ins't a winner in the given index.
-     */
-    private boolean analyseWinner(int index, int range, int jump){
-        for(int j = index; range >= 0; j += jump){
-            if(!isCurrentTurn(board[j/rows][j%columns]))
-                break;
-            if(--range == 0)
-                return true;
-        }
-        return false;
-    }
-
     /** Verifies if a winner exists in the board.
      * @return a boolean that if true a winner is in the board, else the game has no winner.
      */
-    private boolean checkWinner(){
-        for(Integer i : movesNotAvaible){
-            if(i % columns + (winningCondition-1) < columns && analyseWinner(i, winningCondition,1)) // Cheks if there is a horizontal line of k IDs
+    private boolean checkWinner(int i){
+            if(getPotentialWin(i/this.rows,i%this.columns, this.playersTurn, 0, 1) == this.winningCondition) // Cheks if there is a horizontal line of k IDs
                 return true;
 
-            if(i / columns + (winningCondition-1) < rows && analyseWinner(i, winningCondition, rows)) // Cheks if there is a vertical line of k IDs
+            if(getPotentialWin(i/this.rows,i%this.columns, this.playersTurn, 1, 0) == this.winningCondition) // Cheks if there is a vertical line of k IDs
                 return true;
 
-            if(i % columns + (winningCondition-1) < columns && i / rows + (winningCondition-1) < rows && analyseWinner(i, winningCondition, rows + 1)) // Cheks if there is a right diagonal line of k IDs
+            if(getPotentialWin(i/this.rows,i%this.columns, this.playersTurn, 1, 1) == this.winningCondition) // Cheks if there is a right diagonal line of k IDs
                 return true;  
 
-            if(i % columns - (winningCondition-1) >= 0 && i / rows + (winningCondition-1) < rows && analyseWinner(i, winningCondition, rows - 1)) // Cheks if there is a left diagonal line of k IDs
+            if(getPotentialWin(i/this.rows,i%this.columns, this.playersTurn, 1, -1) == this.winningCondition) // Cheks if there is a left diagonal line of k IDs
                 return true; 
-        }
         return false;
     }
 
@@ -234,7 +216,7 @@ public class Board implements Ilayout,Cloneable{
             gameOver = true;
         }
 
-        if(checkWinner()){
+        if(checkWinner(lastMove)){
             winner = getTurn();
             gameOver = true;
         }
@@ -726,6 +708,23 @@ public class Board implements Ilayout,Cloneable{
     //     int r = index / rows;
     //     int c = index % columns;
     //     return (rows * r) +  Math.abs(columns-1 - c);
+    // }
+
+
+    //     /** Returns a boolean that if true, a winner is in the given index. 
+    //  * @param index int
+    //  * @param range int
+    //  * @param jump int
+    //  * @return a boolean that if true, there is a winner in the index else there ins't a winner in the given index.
+    //  */
+    // private boolean analyseWinner(int index, int range, int jump){
+    //     for(int j = index; range >= 0; j += jump){
+    //         if(!isCurrentTurn(board[j/rows][j%columns]))
+    //             break;
+    //         if(--range == 0)
+    //             return true;
+    //     }
+    //     return false;
     // }
 
 
