@@ -55,7 +55,7 @@ public class Board implements Ilayout,Cloneable{
      * @param board ID[][]
      * @param k int
      */
-    public Board(ID[][] board, int k){
+    public Board(ID[][] board, int k, int lastMove){
         this(board.length, board.length > 0 ? board[0].length : 0, k);
 
         if(board.length <= 0 || board[0].length <= 0)
@@ -64,7 +64,7 @@ public class Board implements Ilayout,Cloneable{
         this.board = board;
 
         this.playersTurn = calculateLastTurn();
-        if(this.gameOver = checkWinner())
+        if(this.gameOver = checkWinner(lastMove))
              this.winner = this.playersTurn;
 
         this.playersTurn = getOpositePlayer();
@@ -160,20 +160,24 @@ public class Board implements Ilayout,Cloneable{
         return this.rc;
     }
 
+    private boolean checkWinner(int i){
+        return checkWinner(i/this.rows, i%this.columns);
+    }
+
     /** Verifies if a winner exists in the board.
      * @return a boolean that if true a winner is in the board, else the game has no winner.
      */
-    private boolean checkWinner(int i){
-            if(getPotentialWin(i/this.rows,i%this.columns, this.playersTurn, 0, 1) == this.winningCondition) // Cheks if there is a horizontal line of k IDs
+    private boolean checkWinner(int row, int column){
+            if(getPotentialWinHeuristic(row, column, this.playersTurn, 0, 1) >= this.winningCondition) // Cheks if there is a horizontal line of k IDs
                 return true;
 
-            if(getPotentialWin(i/this.rows,i%this.columns, this.playersTurn, 1, 0) == this.winningCondition) // Cheks if there is a vertical line of k IDs
+            if(getPotentialWinHeuristic(row, column, this.playersTurn, 1, 0) >= this.winningCondition) // Cheks if there is a vertical line of k IDs
                 return true;
 
-            if(getPotentialWin(i/this.rows,i%this.columns, this.playersTurn, 1, 1) == this.winningCondition) // Cheks if there is a right diagonal line of k IDs
+            if(getPotentialWinHeuristic(row, column, this.playersTurn, 1, 1) >= this.winningCondition) // Cheks if there is a right diagonal line of k IDs
                 return true;  
 
-            if(getPotentialWin(i/this.rows,i%this.columns, this.playersTurn, 1, -1) == this.winningCondition) // Cheks if there is a left diagonal line of k IDs
+            if(getPotentialWinHeuristic(row, column, this.playersTurn, 1, -1) >= this.winningCondition) // Cheks if there is a left diagonal line of k IDs
                 return true; 
         return false;
     }
@@ -461,21 +465,15 @@ public class Board implements Ilayout,Cloneable{
      * @param jump int
      * @return the winning potential value.
      */
-    private int getPotentialWin(int row, int column, ID turn, int jumpRow, int jumpColumn){
+    private int getPotentialWinHeuristic(int row, int column, ID turn, int jumpRow, int jumpColumn){
         int result = 0;
         int count = 0;
 
         int i = row;
         int j = column;
 
-        int minRow = Math.min(this.rows - 1, row + ((this.winningCondition - 1) * Math.abs(jumpRow)));
-        int minColumn = Math.min(this.columns - 1, column + ((this.winningCondition - 1) * Math.abs(jumpColumn)));
-        
-        int maxRow = Math.max(0, row - ((this.winningCondition - 1) * Math.abs(jumpRow)));
-        int maxColumn = Math.max(0, column - ((this.winningCondition - 1) * Math.abs(jumpColumn)));
-
-        while(i >= 0 && i <= minRow &&
-              j >= 0 && j <= minColumn){
+        while(i >= 0 && i < this.rows &&
+              j >= 0 && j < this.columns){
             if(getOpositePlayer(turn) == board[i][j])
                 break;
             else if(turn == board[i][j])
@@ -488,8 +486,8 @@ public class Board implements Ilayout,Cloneable{
 
         i = row - jumpRow;
         j = column - jumpColumn;
-        while(i >= maxRow && i < this.rows && 
-              j >= maxColumn && j < this.columns){
+        while(i >= 0 && i < this.rows && 
+              j >= 0 && j < this.columns){
             if(getOpositePlayer(turn) == board[i][j])
                 break;
             else if(turn == board[i][j])
@@ -510,10 +508,10 @@ public class Board implements Ilayout,Cloneable{
         int result = 0;
         for(Integer index : movesNotAvaible){
             if(board[index/rows][index%columns] == turn){
-                result += getPotentialWin(index/this.rows, index%this.columns, turn, 0, 1);
-                result += getPotentialWin(index/this.rows, index%this.columns, turn, 1, 0);
-                result += getPotentialWin(index/this.rows, index%this.columns, turn, 1, 1);
-                result += getPotentialWin(index/this.rows, index%this.columns, turn, 1, -1);
+                result += getPotentialWinHeuristic(index/this.rows, index%this.columns, turn, 0, 1);
+                result += getPotentialWinHeuristic(index/this.rows, index%this.columns, turn, 1, 0);
+                result += getPotentialWinHeuristic(index/this.rows, index%this.columns, turn, 1, 1);
+                result += getPotentialWinHeuristic(index/this.rows, index%this.columns, turn, 1, -1);
             }
         }
         return result;

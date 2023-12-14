@@ -8,7 +8,7 @@ public class Client {
         int start = Integer.parseInt(sc.next());
         int goal = start * 3;
 
-        Iterator<State> iterator = new IterativeDeepeningAStar().solve(new Triple(start), new Triple(goal));
+        Iterator<State> iterator = new AStar().solve(new Triple(start), new Triple(goal));
 
         State current = null;
         while(iterator.hasNext()){

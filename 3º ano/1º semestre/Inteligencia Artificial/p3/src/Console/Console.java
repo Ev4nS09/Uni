@@ -126,11 +126,11 @@ public class Console {
         // new Board(3, 3, 3).getAllBoards(array);
         // System.exit(0);
 
-    	final int repetitions=15;
-        int x = 4;
+    	final int repetitions=1;
+        int x = 5;
     	long times = 0;
     	for(int i=0; i<repetitions; i++) {
-            Console game = new Console(x, x, x, 8);
+            Console game = new Console(x, x, 4, 4);
             long startTime = System.currentTimeMillis();
             game.play();   
             long totalTime = System.currentTimeMillis() - startTime;

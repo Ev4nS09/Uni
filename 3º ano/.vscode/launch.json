@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Client",
+      "request": "launch",
+      "mainClass": "Client",
+      "projectName": "3º ano_169ba04b"
+    },
+    {
+      "type": "java",
       "name": "Console",
       "request": "launch",
       "mainClass": "Console.Console",
