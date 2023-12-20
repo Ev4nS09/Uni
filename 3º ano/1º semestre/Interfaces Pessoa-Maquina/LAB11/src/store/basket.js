@@ -3,42 +3,34 @@
   export const useBasketStore = defineStore({
   id: 'basket',
   state: () => ( {
-    products: [
-    //  {
-    //    id: 1,
-    //    quantity: 5
-    //  },
-    //  {
-    //   id: 2,        
-    //    quantity: 2
-    //  },
-    //  {
-    //    id: 3,        
-    //    quantity: 3
-    //  }
-    ]
+    products: new Map()
   }),
   getters: {
     getProducts (state) {
       return state.products;
-    },   
+    },    
+    getBasketSize (state) {
+      return state.products.size
+    },
   }, 
   actions: {
     clearBasket () {
-        this.products = []
+        this.products = new Map()
     },
     incrementProduct (idToIncrement) {
-        // check if item exists in basket
-
-
-        // item does not exist; create item
-
-        // increment item
+      if(this.products.has(idToIncrement)){
+        this.products.set(idToIncrement, this.products.get(idToIncrement) + 1)
+      }
+      else
+        this.products.set(idToIncrement, 1)
 
       },    
       decrementProduct (idToDecrement) {
-
-          // remove item if quantity is 0
+        if(this.products.get(idToDecrement) > 0){
+          this.products.set(idToDecrement, this.products.get(idToDecrement) - 1)
+        }
+        else
+          this.products.delete(idToDecrement)
       }
 
 	},

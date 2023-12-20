@@ -36,12 +36,15 @@ export default {
 	},
 	data() {
 		return {
-			products:[] ,
+			products:[],
+			basket:[],
 		}
 	},
 	async mounted() {
 		await this.productsStore.getProductsDB()
 		this.products = this.productsStore.getProducts
+
+		this.basket = this.basketStore.getProducts
 	},
 	methods: {
 		getImage(image){

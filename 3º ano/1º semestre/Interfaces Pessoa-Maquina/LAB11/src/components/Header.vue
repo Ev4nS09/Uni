@@ -9,6 +9,10 @@
 		</div>
 
 		<div v-if="!userLoggedIn" class = "col d-flex justify-content-end align-items-center">
+			<div class="d-flex align-items-end me-4">
+				<router-link to = "/Basket"><img src="src/assets/images/basket.png" height="50" width="50"></router-link>
+				<h3>{{  }}</h3>
+			</div>
         	<router-link to = "/login" class ="btn btn-outline-light d-inline mx-1" role = "button">Login</router-link>
         	<router-link to = "/register" class =" btn btn-outline-light d-inline mx-1" role = "button">Register</router-link>
     	</div>
