@@ -38,7 +38,7 @@ export default {
                 	this.message = "Success: User deleted"
                 }
 				if (this.$route.params.id == 3) {
-                	this.message = "Success: Post added to database"
+                	this.message = "Couldn't complete your order"
                 }
 				if (this.$route.params.id == 4) {
                 	this.message = "Welcome! You can now login"
@@ -47,17 +47,17 @@ export default {
                 	this.message = "Welcome back " + this.userStore.getUser.name + "!"
                 }
 				if (this.$route.params.id == 6) {
-                	this.message = "Bye " + this.userStore.getTmpUser.name + ", come back soon!"
+                	this.message = "Bye, come back soon!"
                 }	
 				if (this.$route.params.id == 7) {
-                	this.message = "Success: Comment added to database"
+                	this.message = "Your order was made"
                 }																
 				
 				var timeleft = 2;
 				var downloadTimer = setInterval(() => {
 					if(timeleft <= 0){
 						clearInterval(downloadTimer)
-						this.$router.push('/')
+						this.$router.push('/menu')
 					}
 				timeleft -= 1
 				}, 1000)

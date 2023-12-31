@@ -3,7 +3,7 @@
 $hostname = "localhost";
 $db_name = "db_a76943";
 $db_user = "a76943";
-$db_passwd = "21b9e3";
+$db_passwd = "21b9e3"; //  para server de produção
 
 // Turn off all error reporting
 error_reporting(0);   

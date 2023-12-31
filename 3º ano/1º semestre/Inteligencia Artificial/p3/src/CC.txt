@@ -1,0 +1,16 @@
+CC
+
+Apelidos: Rio Soares da Silva
+Nome: Aonso
+Sexo: M
+Altura: 1,70 Metros
+Nacionalidade: PRT
+Data de nascimento: 05/08/2003
+Nº Documento: 30638542 2 ZX0
+Data de validade: 28/09/2026
+
+
+Filiação: Vitor José Soares da Silva * Sandra Isabel Mendes Rio
+Nº de Identificação Fiscal: 274416522
+Nº de Segurança Social: 1203 0438 846
+Nº de Utende de Saúde: 594175923

@@ -9,8 +9,8 @@
     getProducts (state) {
       return state.products;
     },    
-    getBasketSize (state) {
-      return state.products.size
+    getBasketSize () {
+      return this.products.size
     },
   }, 
   actions: {
@@ -24,15 +24,15 @@
       else
         this.products.set(idToIncrement, 1)
 
-      },    
-      decrementProduct (idToDecrement) {
-        if(this.products.get(idToDecrement) > 0){
-          this.products.set(idToDecrement, this.products.get(idToDecrement) - 1)
-        }
-        else
-          this.products.delete(idToDecrement)
+    },    
+    decrementProduct (idToDecrement) {
+      if(this.products.get(idToDecrement) > 1){
+        this.products.set(idToDecrement, this.products.get(idToDecrement) - 1)
       }
-
+      else if(this.products.get(idToDecrement) == 1){
+        this.products.delete(idToDecrement)
+      }
+    },
 	},
 
 })
