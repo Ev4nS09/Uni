@@ -4,17 +4,19 @@
 typedef struct Node{
     struct Node *next;
     void *value;
+    void (*free_value)(void*);
 }Node;
 
-Node *new_node(Node *next, void *value);
+Node *new_node(Node *next, void *value, void (*free_value)(void*));
 
 typedef struct List{
     Node *first;
     Node *last;
+    void (*free_value)(void*);
     int size;
 }List;
 
-List *new_list();
+List *new_list(void (*free_value)(void*));
 
 void free_node(Node *node);
 
@@ -64,7 +66,7 @@ void list_sort(List *list, int (*cmp)(void*, void*));
 
 int list_to_array(List *list, void **array);
 
-List *array_to_list(void **array, int array_size, List *list);
+List *array_to_list(void **array, int array_size, List *list, void (*free_value)(void*));
 
 void print_list_linked(List *list, void (*print_value)(void*));
 
@@ -74,9 +76,10 @@ void print_array(void **array, int n, void (*print_value)(void*));
 
 typedef struct Queue{
     List *list;
+    void (*free_value)(void*);
 }Queue;
 
-Queue *new_queue();
+Queue *new_queue(void (*free_value)(void*));
 
 void free_queue(Queue *queue);
 
@@ -102,9 +105,10 @@ typedef struct Map{
     int size;
     int keys;
     int overload;
+    void (*free_value)(void*);
 }Map;
 
-Map* new_map(int (*hash)(Map*, void*), int size, int overload);
+Map* new_map(int (*hash)(Map*, void*), int size, int overload, void (*free_value)(void*));
 
 typedef struct KeyValue{
     void* key;
