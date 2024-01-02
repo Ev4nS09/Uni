@@ -17,13 +17,14 @@ List *new_list(void (*free_value)(void*)){
     List *result = malloc(sizeof(List));
     result->first = new_node(NULL, NULL, free_value);
     result->last = new_node(NULL, NULL, free_value);
-     result->free_value = free_value;
+    result->free_value = free_value;
     result->size = 0;
     return result;
 }
 
 void free_node(Node *node){
-    node->free_value(node->value);
+    if(node->free_value != NULL)
+        node->free_value(node->value);
     free(node);
 }
 
@@ -49,11 +50,11 @@ void list_clear(List *list){
     list->size = 0;
 }
 
-int is_value_in_list(List *list, void *value, int(*is_equal)(void*, void*)){
+int is_value_in_list(List *list, void *value, Compare cmp){
     int result = 0;
     Node *current_node = list->first;
     while(current_node != NULL){
-        if(is_equal(current_node->value, value)){
+        if(cmp(current_node->value, value)){
             result = 1;
             break;
         }
@@ -74,6 +75,28 @@ void list_add(List *list, void* value){
     Node *node = new_node(list->first, value, list->free_value);
     list->first = node;
     list->size = list->size + 1;
+}
+
+void list_add_unique(List *list, void* value, Compare cmp){
+    Node* currentNode = list->first;
+    while(currentNode != NULL){
+        if(cmp(currentNode->value, value) == 1)
+            return;
+        currentNode = currentNode->next;
+    }
+    list_add(list, value);
+}
+
+void list_add_unique_replace(List *list, void* value, Compare cmp){
+    Node* currentNode = list->first;
+    while(currentNode != NULL){
+        if(cmp(currentNode->value, value) == 1){
+            currentNode->value = value;
+            return;
+        }
+        currentNode = currentNode->next;
+    }
+    list_add(list, value);
 }
 
 void list_add_last(List *list, void* value){
@@ -98,7 +121,7 @@ void list_add_at_index(List *list, void* value, int index){
     }
 }
 
-void list_add_sorted(List *list, void* value, int(*cmp)(void*, void*)){
+void list_add_sorted(List *list, void* value, Compare cmp){
     Node *current_node = list->first;
     if(is_list_empty(list) || cmp(list->first->value, value) < 0){
         list_add(list, value);
@@ -122,7 +145,7 @@ void list_add_list(List *list_head, List *list_tail){
     }
 }
 
-void list_add_list_sorted(List *list_head, List *list_tail, int(*cmp)(void*, void*)){
+void list_add_list_sorted(List *list_head, List *list_tail, Compare cmp){
     Node *node_tail = list_tail->first;
     while(node_tail != NULL){
         list_add_sorted(list_head, node_tail->value, cmp);
@@ -178,13 +201,13 @@ void list_remove_at_index(List *list, int index){
     }
 }
 
-void list_remove_value(List *list, void* value, int(*is_equal)(void*, void*)){
+void list_remove_value(List *list, void* value, Compare cmp){
 
-    if(is_equal(list->first->value, value))
+    if(cmp(list->first->value, value))
         list_remove_first_node(list);
     else{
         Node *current_node = list->first;
-        while(!is_equal(current_node->next->value, value)){
+        while(!cmp(current_node->next->value, value)){
             current_node = current_node->next; 
             if(current_node->next == NULL) return;
         }
@@ -198,17 +221,17 @@ void list_remove_value(List *list, void* value, int(*is_equal)(void*, void*)){
     }
 }   
 
-void list_remove_all_value(List *list, void *value, int(*is_equal)(void*, void*)){ 
-    while(!is_list_empty(list) && is_equal(list->first->value, value)){list_remove_first_node(list);}
+void list_remove_all_value(List *list, void *value, Compare cmp){ 
+    while(!is_list_empty(list) && cmp(list->first->value, value)){list_remove_first_node(list);}
     Node *current_node = list->first;
     while(!is_list_empty(list) && current_node->next != NULL){
-        if(is_equal(current_node->next->value, value)){
+        if(cmp(current_node->next->value, value)){
             Node *node_temp = current_node->next;
             current_node->next = current_node->next->next;
             free(node_temp);
             list->size = list->size - 1;
         }
-        if(current_node->next != NULL && !is_equal(current_node->next->value, value))
+        if(current_node->next != NULL && !cmp(current_node->next->value, value))
             current_node = current_node->next;
     }
     if(list->last == NULL && current_node != NULL) list->last = current_node;
@@ -223,11 +246,11 @@ void* list_get_last(List *list){
     return list->last->value;
 }
 
-void* list_get_value(List* list, void* value, int(*is_equal)(void*, void*)){
+void* list_get_value(List* list, void* value, Compare cmp){
     void* result = NULL;
     Node* current_node = list->first;
     while(current_node != NULL){
-        if(is_equal(current_node->value, value)){
+        if(cmp(current_node->value, value)){
             result = current_node->value;
             break;
         }
@@ -236,11 +259,11 @@ void* list_get_value(List* list, void* value, int(*is_equal)(void*, void*)){
     return result;
 }
 
-int list_contains_value(List* list, void* value, int(*is_equal)(void*, void*)){
+int list_contains_value(List* list, void* value, Compare cmp){
     int result = 0;
     Node* current_node = list->first;
     while(current_node != NULL){
-        if(is_equal(current_node->value, value)){
+        if(cmp(current_node->value, value)){
            result = 1; 
            break;
         }
@@ -276,7 +299,7 @@ void list_swap_node(Node *node1, Node *node2){
     node2->value = value;
 }
 
-void list_sort(List *list, int (*cmp)(void*, void*)){
+void list_sort(List *list, Compare cmp){
     Node* current_node_i = list->first;
     Node* current_node_j = list->first->next;
     for(int i = 0; i < list->size-1; i++){
@@ -372,7 +395,7 @@ void *queue_remove(Queue *queue){
     return result;
 }
 
-void queue_priority_add(Queue *queue, void *value, int (*cmp)(void*, void*)){
+void queue_priority_add(Queue *queue, void *value, Compare cmp){
     list_add_sorted(queue->list, value, cmp);
 }
 
@@ -380,7 +403,7 @@ void queue_add_queue(Queue *queue1, Queue *queue2){
     list_add_list(queue1->list, queue2->list);
 }
 
-void queue_add_list_sorted(Queue *queue, List *list, int(*cmp)(void*, void*)){
+void queue_add_list_sorted(Queue *queue, List *list, Compare cmp){
     list_add_list_sorted(queue->list, list, cmp);
 }
 
@@ -388,103 +411,67 @@ void queue_clear(Queue *queue){
     list_clear(queue->list);
 }
 
-Map* new_map(int (*hash)(Map*, void*), int size, int overload, void (*free_value)(void*)){
+Map* new_map(Hash hash, int size, int overload, void (*free_value)(void*)){
     Map *result = malloc(sizeof(Map));
     result->buckets = calloc(size, sizeof(List));
     result->hash = hash;
     result->size = size;
-    result->keys = 0;
     result->overload = overload;
     result->free_value = free_value;
     return result;
 }
 
-KeyValue* new_keyvalue(void* key, void* value){
-    KeyValue* result = malloc(sizeof(KeyValue));
+Pair* new_pair(void* key, void* value){
+    Pair *result = malloc(sizeof(Pair));
     result->key = key;
     result->value = value;
     return result;
 }
 
-void free_hash_array(List** array, int size){
-    for(int i = 0; i < size; i++)
-        if(array[i] != 0)
-            free_list(array[i]);
-    free(array);
+void map_put(Map* map, void* key, void* value){
+    Pair *pair = new_pair(key, value);
+    int index = map->hash(*(void*)key, map->size);
+    if(map->buckets[index] == 0){
+       map->buckets[index] = new_list(map->free_value); 
+    }
+    map->size = map->size + 1;
+    list_add(map->buckets[index], pair);
+}
+
+void* map_get(Map* map, void* key, Compare cmp){
+    void* result1 = list_get_value(map->buckets[map->hash(key, map->size)], key, cmp);
+    Pair* result2 = (Pair*) result1;
+    return result2->value;
 }
 
 void free_map(Map* map){
-    free_hash_array(map->buckets, map->size);
+    for(int i = 0; i < map->size; i++){
+        if(map->buckets[i] != 0){
+            free_list(map->buckets[i]);
+        }
+    }
+    free(map->buckets);
     free(map);
 }
 
-List** resize_array(Map *map, void*(*copy_value)(void*)){
-    List** result = calloc(map->size * 2, sizeof(List));
-    for(int i = 0; i < map->size; i++){
-        while((map->buckets[i] != (long) 0) && !is_list_empty(map->buckets[i])){
-            void* value = list_get_and_remove_first(map->buckets[i], copy_value); 
-            result[i] = new_list(map->free_value);
-            list_add(result[map->hash(map, ((KeyValue*)value)->key)], value);
-        }
-    }
-    map->size = map->size * 2;
+int hash(int key, int size){
+    return key % size;
+}
+
+int cmp_pair_int(Pair* x, int* y){
+    int result = *((int*)(x->key)) == *y ? 1 : 0;
     return result;
-}
-
-void map_put(Map* map, void* key, void* value, void*(*copy_value)(void*)){
-    KeyValue* keyvalue = new_keyvalue(key, value);
-    int index = map->hash(map, keyvalue->key);
-    map->keys = map->keys + 1;
-    if(map->buckets[index] == 0) {
-        map->buckets[index] = new_list(map->free_value); 
-    }
-    list_add(map->buckets[index], (void*) keyvalue);
-    if(map->keys == map->size * map->overload){
-        printf("RESIZE\n");
-        List** array_temp = map->buckets;
-        map->buckets = resize_array(map, copy_value);
-        free_hash_array(array_temp, map->size/2);
-    }
-}
-
-void* map_get(Map* map, void* key, int (*is_equal_keyvalue)(void*, void*)){
-    int index = map->hash(map, key);
-    return ((KeyValue*) list_get_value(map->buckets[index], key, is_equal_keyvalue))->value;
-}
-
-int map_contains_key(Map* map, void* key, int(*is_equal)(void*, void*)){
-    int result = 0;
-    if(map->keys != 0 && map->buckets[map->hash(map, key)] != (long) 0){
-        result = list_contains_value(map->buckets[map->hash(map, key)], key, is_equal);
-    }
-    return result;
-}
-
-int hash(Map* map, void* value){
-    int result = (*(int*)value);
-    return map->size == 0 ? 0 : result % map->size;
-}
-
-void *cpy(void* x){
-    int *result = malloc(sizeof(int));
-    *(result) = *(int*)x;
-    return result;
-}
-
-int is_equal(void* x, void *y) {
-    return *(int*) x == *(int*) y ? 1 : 0;
-}
-
-void free_value(void * value){
-    free(value);
 }
 
 int main(){
-    Map* map = new_map(hash, 1000, 2, free_value);
-    int x = 6;
-    int y = 6;
-    map_put(map, &x, &y, cpy);
-    printf("%d\n", *(int*) map_get(map, &x, is_equal));
+    while(1){
+    Map* map = new_map((Hash) hash, 1000, 2, NULL);
+    int x = 5;
+    int y = 5;
+    map_put(map, &x, &y);
+    printf("%d\n", *(int*) map_get(map, &x, (Compare) cmp_pair_int));
+    x = 7;
+    printf("%d\n", *(int*) map_get(map, &x, (Compare) cmp_pair_int));
     free_map(map);
-    return 0;
+}
 }

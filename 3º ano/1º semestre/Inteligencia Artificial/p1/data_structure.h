@@ -18,6 +18,9 @@ typedef struct List{
 
 List *new_list(void (*free_value)(void*));
 
+typedef int (*Compare)(void*, void*);
+typedef int (*Hash)(void*, int);
+
 void free_node(Node *node);
 
 void free_list(List *list);
@@ -101,30 +104,20 @@ void queue_clear(Queue *queue);
 
 typedef struct Map{
     List** buckets; //copyright © Alex Rodrigues i20
-    int (*hash)(struct Map*, void*);
+    Hash hash;
     int size;
-    int keys;
+    int values;
     int overload;
     void (*free_value)(void*);
 }Map;
 
-Map* new_map(int (*hash)(Map*, void*), int size, int overload, void (*free_value)(void*));
+Map* new_map(Hash hash, int size, int overload, void (*free_value)(void*));
 
-typedef struct KeyValue{
+typedef struct Pair{
     void* key;
     void* value;
-}KeyValue;
+}Pair;
 
-KeyValue* new_keyvalue(void* key, void* value);
-
-int hash(Map* map, void* key);
-
-void free_map(Map* map);
-
-void map_put(Map* map, void* key, void* value, void*(*copy_value)(void*));
-
-void* map_get(Map* map, void* key, int (*is_equal_keyvalue)(void*, void*));
-
-int map_contains_key(Map* map, void* key, int(*is_equal)(void*, void*));
+Pair* new_pair(void* key, void* value);
 
 #endif
