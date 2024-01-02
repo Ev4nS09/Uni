@@ -3,6 +3,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Client",
+      "request": "launch",
+      "mainClass": "Client",
+      "projectName": "Uni_e59dc3e"
+    },
+    {
+      "type": "java",
+      "name": "Console",
+      "request": "launch",
+      "mainClass": "Console.Console",
+      "projectName": "Uni_e59dc3e"
+    },
+    {
+      "type": "java",
       "name": "Console",
       "request": "launch",
       "mainClass": "Console.Console",

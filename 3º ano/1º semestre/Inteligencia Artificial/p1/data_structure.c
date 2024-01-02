@@ -428,9 +428,9 @@ Pair* new_pair(void* key, void* value){
     return result;
 }
 
-void map_put(Map* map, void* key, void* value){
-    Pair *pair = new_pair(key, value);
-    int index = map->hash(*(void*)key, map->size);
+void map_put(Map* map, void* key, void* value, Copy copy_value){
+    Pair *pair = new_pair(copy_value(key), copy_value(value));
+    int index = map->hash(pair->key, map->size);
     if(map->buckets[index] == 0){
        map->buckets[index] = new_list(map->free_value); 
     }
@@ -454,8 +454,8 @@ void free_map(Map* map){
     free(map);
 }
 
-int hash(int key, int size){
-    return key % size;
+int hash(int *key, int size){
+    return *key % size;
 }
 
 int cmp_pair_int(Pair* x, int* y){
@@ -463,15 +463,25 @@ int cmp_pair_int(Pair* x, int* y){
     return result;
 }
 
+void free_value(int* value){
+    free(value);
+}
+
+void* copy_value(int* value){
+    int* result = malloc(sizeof(int));
+    *result = *value;
+    return result;
+}
+
 int main(){
     while(1){
-    Map* map = new_map((Hash) hash, 1000, 2, NULL);
+    Map* map = new_map((Hash) hash, 1000, 2, (Free) free_value);
     int x = 5;
     int y = 5;
-    map_put(map, &x, &y);
+    map_put(map, &x, &y, (Copy) copy_value);
     printf("%d\n", *(int*) map_get(map, &x, (Compare) cmp_pair_int));
     x = 7;
-    printf("%d\n", *(int*) map_get(map, &x, (Compare) cmp_pair_int));
+    printf("%d\n", *(int*) map_get(map, &y, (Compare) cmp_pair_int));
     free_map(map);
 }
 }

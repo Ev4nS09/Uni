@@ -2,15 +2,3 @@
 {"email":"a@a.com","username":"a","passwordHash":"$2b$10$gSxqUOwNmpqkZ4Y56Fk6SuX2E2/Uw1leFstlDzUjKbHKfo2AsiGmG","_id":"MtsRv3m5JvWcJv5N"}
 {"email":"d@d.com","username":"D","passwordHash":"$2b$10$76vUhx7dg4x/nomM5qT.tufp8/hTx46eCo0EeACZwAsL0YO2egVZ6","_id":"cpZNVkMDL2EIlrSU"}
 {"email":"c@c.com","username":"c","passwordHash":"$2b$10$XbEP.sBn3P8yW3w9WnQ6ou5A0Pi7p0oP2NR4VTRtNw52VvDMQ.HMm","_id":"eQFdgyW98ZO8VP9d"}
-{"email":"e@e.com","username":"e","passwordHash":"$2b$10$frG5aSgEZYAluMsz.R4ts.0aMY5E1H9jGW.VX5rDVpxfMNE2EyqQi","_id":"oqjRCsmWbGWk2bh3"}
-{"email":"f@f.com","username":"f","passwordHash":"$2b$10$BWrq.7Tlpbhlrb4Crbn7neA8gZBe3hxxqtCiZBQhuNZIaY8a.K2Bu","_id":"iyq8TAg0PxNkOgan"}
-{"$$deleted":true,"_id":"iyq8TAg0PxNkOgan"}
-{"$$deleted":true,"_id":"oqjRCsmWbGWk2bh3"}
-{"email":"e@e.com","username":"e","passwordHash":"$2b$10$mPJJ2pbIIX4y0BtM/OMBZ.WHqTQh7GQKX77RozSVi8btX5Nygysoq","_id":"osLuiI2kUK1bjnRS"}
-{"$$deleted":true,"_id":"osLuiI2kUK1bjnRS"}
-{"email":"e@e.com","username":"e","passwordHash":"$2b$10$BJwO.fH0p6EXC44oSE6Iu.yJlLJs5WblgsjrWtldohXBsfin8.R6O","_id":"fIo9up00qp4Ue8zv"}
-{"$$deleted":true,"_id":"fIo9up00qp4Ue8zv"}
-{"email":"aa@a.com","username":"aa","passwordHash":"$2b$10$XvqVyDV1GWG74a7pzHW1IO7E3k0QpsX711DnyYMHaN/CxOA3qRl/S","_id":"6LFLPn59Roe4Ao7Y"}
-{"$$deleted":true,"_id":"6LFLPn59Roe4Ao7Y"}
-{"email":"aa@a.com","username":"aa","passwordHash":"$2b$10$wt5WLquE8AhB9Ba.kHc88OEsGWR9grlITjaVDGVWXO2e0uOrAjeSi","_id":"8QxWFtDhYyWDbakU"}
-{"$$deleted":true,"_id":"8QxWFtDhYyWDbakU"}

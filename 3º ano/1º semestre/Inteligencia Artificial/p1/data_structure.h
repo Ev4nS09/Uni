@@ -19,7 +19,12 @@ typedef struct List{
 List *new_list(void (*free_value)(void*));
 
 typedef int (*Compare)(void*, void*);
+
 typedef int (*Hash)(void*, int);
+
+typedef void (*Free)(void*);
+
+typedef void* (*Copy)(void*);
 
 void free_node(Node *node);
 
