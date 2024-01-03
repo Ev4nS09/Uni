@@ -7,7 +7,7 @@ typedef struct Node{
     void (*free_value)(void*);
 }Node;
 
-Node *new_node(Node *next, void *value, void (*free_value)(void*));
+Node *new_node(Node *next, void *value);
 
 typedef struct List{
     Node *first;
@@ -26,7 +26,7 @@ typedef void (*Free)(void*);
 
 typedef void* (*Copy)(void*);
 
-void free_node(Node *node);
+void free_node(Node *node, Free free_value);
 
 void free_list(List *list);
 
@@ -113,10 +113,10 @@ typedef struct Map{
     int size;
     int values;
     int overload;
-    void (*free_value)(void*);
+    Free free_value;
 }Map;
 
-Map* new_map(Hash hash, int size, int overload, void (*free_value)(void*));
+Map* new_map(Hash hash, int size, int overload, Free free_value);
 
 typedef struct Pair{
     void* key;

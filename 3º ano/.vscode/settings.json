@@ -62,6 +62,13 @@
     "vector": "c",
     "memory": "c",
     "string_view": "c",
-    "system_error": "c"
+    "system_error": "c",
+    "ratio": "c",
+    "array": "c",
+    "functional": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "utility": "c",
+    "data_structure.h": "c"
   }
 }

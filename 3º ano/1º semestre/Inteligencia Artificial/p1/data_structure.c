@@ -5,34 +5,36 @@
 
 #include "data_structure.h"
 
-Node *new_node(Node *next, void *value, void (*free_value)(void*)){
+Node *new_node(Node *next, void *value){
     Node *result = malloc(sizeof(Node));
     result->next = next;
     result->value = value;
-    result->free_value = free_value;
     return result;
 }
 
-List *new_list(void (*free_value)(void*)){
+List *new_list(Free free_value){
     List *result = malloc(sizeof(List));
-    result->first = new_node(NULL, NULL, free_value);
-    result->last = new_node(NULL, NULL, free_value);
+    result->first = NULL;
+    result->last = NULL;
     result->free_value = free_value;
     result->size = 0;
     return result;
 }
 
-void free_node(Node *node){
-    if(node->free_value != NULL)
-        node->free_value(node->value);
+void free_node(Node *node, Free free_value){
+    if(node != NULL)
+        if(node->free_value != NULL)
+            free_value(node->value);
     free(node);
 }
 
 void free_list(List *list){
-    while(list->first != NULL){
-        Node *node = list->first;
-        list->first = list->first->next;
-        free_node(node);
+    if(list != NULL){
+        while(list->first != NULL){
+            Node *node = list->first;
+            list->first = list->first->next;
+            free_node(node, list->free_value);
+        }
     }
     free(list);
 }
@@ -45,7 +47,7 @@ void list_clear(List *list){
     while(list->first != NULL){
         Node *node = list->first;
         list->first = list->first->next;
-        free_node(node);
+        free_node(node, list->free_value);
     }
     list->size = 0;
 }
@@ -64,7 +66,7 @@ int is_value_in_list(List *list, void *value, Compare cmp){
 }
 
 void list_add_empty(List *list, void* value){
-    Node* node = new_node(NULL, value, list->free_value);
+    Node* node = new_node(NULL, value);
     list->first = node;
     list->last = node;
     list->size = 1;
@@ -72,7 +74,7 @@ void list_add_empty(List *list, void* value){
 
 void list_add(List *list, void* value){
     if(list->size == 0) return list_add_empty(list, value);
-    Node *node = new_node(list->first, value, list->free_value);
+    Node *node = new_node(list->first, value);
     list->first = node;
     list->size = list->size + 1;
 }
@@ -91,7 +93,9 @@ void list_add_unique_replace(List *list, void* value, Compare cmp){
     Node* currentNode = list->first;
     while(currentNode != NULL){
         if(cmp(currentNode->value, value) == 1){
+            void* temp_value = currentNode->value;
             currentNode->value = value;
+            list->free_value(temp_value);
             return;
         }
         currentNode = currentNode->next;
@@ -101,7 +105,7 @@ void list_add_unique_replace(List *list, void* value, Compare cmp){
 
 void list_add_last(List *list, void* value){
     if(list->size == 0) return list_add_empty(list, value);
-    Node* node = new_node(NULL, value, list->free_value);
+    Node* node = new_node(NULL, value);
     list->last->next = node;
     list->last = node;
     list->size = list->size + 1;
@@ -116,7 +120,7 @@ void list_add_at_index(List *list, void* value, int index){
             current_node = current_node->next;
             index--;    
         }
-        current_node->next = new_node(current_node->next, value, current_node->free_value);
+        current_node->next = new_node(current_node->next, value);
         list->size = list->size + 1; 
     }
 }
@@ -129,7 +133,7 @@ void list_add_sorted(List *list, void* value, Compare cmp){
     }
     while(current_node->next != NULL){
         if(cmp(current_node->next->value, value) < 0){
-            current_node->next = new_node(current_node->next, value, current_node->free_value);
+            current_node->next = new_node(current_node->next, value);
             return;
         }
         current_node = current_node->next;
@@ -167,7 +171,7 @@ void list_remove_first_node(List *list){
     Node *node_temp = list->first;
     list->first = list->first->next;
     list->size = list->size - 1;
-    free_node(node_temp);
+    free_node(node_temp, list->free_value);
 }
 
 void list_remove_last_node(List *list){
@@ -180,7 +184,7 @@ void list_remove_last_node(List *list){
     current_node->next = current_node->next->next;
     list->last = current_node;
     list->size = list->size - 1;
-    free_node(node_old_last);
+    free_node(node_old_last, list->free_value);
 }
 
 void list_remove_at_index(List *list, int index){
@@ -197,7 +201,7 @@ void list_remove_at_index(List *list, int index){
         Node *node_temp = current_node->next;
         current_node->next = current_node->next->next;
         list->size = list->size - 1;
-        free_node(node_temp);
+        free_node(node_temp, list->free_value);
     }
 }
 
@@ -215,7 +219,7 @@ void list_remove_value(List *list, void* value, Compare cmp){
         Node *node_temp = current_node->next;
         current_node->next = current_node->next->next;
         list->size = list->size - 1;
-        free_node(node_temp);
+        free_node(node_temp, list->free_value);
 
         if(list->last == NULL) list->last = current_node;
     }
@@ -281,7 +285,7 @@ void* list_get_value_at_index(List *list, int index){
     return node_temp->value;
 }
 
-void* list_get_and_remove_first(List* list, void*(*copy_value)(void*)){
+void* list_get_and_remove_first(List* list, Copy copy_value){
     void* result = copy_value(list_get_first(list));
     list_remove_first_node(list);
     return result;
@@ -323,7 +327,7 @@ int list_to_array(List *list, void **array){
     return result;
 }
 
-List *array_to_list(void **array, int array_size, List *list, void (*free_value)(void*)){
+List *array_to_list(void **array, int array_size, List *list, Free free_value){
     List *result = new_list(free_value);
     for(int i = 0; i < array_size; i++)
         list_add_last(result, array[i]);
@@ -365,7 +369,7 @@ void print_array(void **array, int n, void (*print_value)(void*)){
     printf("]\n");
 }
 
-Queue *new_queue(void (*free_value)(void*)){
+Queue *new_queue(Free free_value){
     Queue *result = malloc(sizeof(Queue));
     result->list = new_list(free_value);
     result->free_value = free_value;
@@ -411,7 +415,7 @@ void queue_clear(Queue *queue){
     list_clear(queue->list);
 }
 
-Map* new_map(Hash hash, int size, int overload, void (*free_value)(void*)){
+Map* new_map(Hash hash, int size, int overload, Free free_value){
     Map *result = malloc(sizeof(Map));
     result->buckets = calloc(size, sizeof(List));
     result->hash = hash;
@@ -428,14 +432,13 @@ Pair* new_pair(void* key, void* value){
     return result;
 }
 
-void map_put(Map* map, void* key, void* value, Copy copy_value){
+void map_put(Map* map, void* key, void* value, Copy copy_value, Compare cmp){
     Pair *pair = new_pair(copy_value(key), copy_value(value));
     int index = map->hash(pair->key, map->size);
     if(map->buckets[index] == 0){
        map->buckets[index] = new_list(map->free_value); 
     }
-    map->size = map->size + 1;
-    list_add(map->buckets[index], pair);
+    list_add_unique_replace(map->buckets[index], pair, cmp);
 }
 
 void* map_get(Map* map, void* key, Compare cmp){
@@ -446,9 +449,7 @@ void* map_get(Map* map, void* key, Compare cmp){
 
 void free_map(Map* map){
     for(int i = 0; i < map->size; i++){
-        if(map->buckets[i] != 0){
-            free_list(map->buckets[i]);
-        }
+        free_list(map->buckets[i]);
     }
     free(map->buckets);
     free(map);
@@ -459,12 +460,25 @@ int hash(int *key, int size){
 }
 
 int cmp_pair_int(Pair* x, int* y){
-    int result = *((int*)(x->key)) == *y ? 1 : 0;
-    return result;
+    return *((int*)(x->key)) == *y ? 1 : 0;
 }
 
-void free_value(int* value){
+int cmp_pair(Pair* x, Pair* y){
+    return *((int*)(x->key)) == *((int*)(y->key)) ? 1 : 0;
+}
+
+int cmp_int(int* x, int* y){
+    return *x == *y ? 1 : 0;
+}
+
+void free_int(int* value){
     free(value);
+}
+
+void free_pair(Pair* pair){
+    free(pair->key);
+    free(pair->value);
+    free(pair);
 }
 
 void* copy_value(int* value){
@@ -473,15 +487,30 @@ void* copy_value(int* value){
     return result;
 }
 
-int main(){
-    while(1){
-    Map* map = new_map((Hash) hash, 1000, 2, (Free) free_value);
-    int x = 5;
-    int y = 5;
-    map_put(map, &x, &y, (Copy) copy_value);
-    printf("%d\n", *(int*) map_get(map, &x, (Compare) cmp_pair_int));
-    x = 7;
-    printf("%d\n", *(int*) map_get(map, &y, (Compare) cmp_pair_int));
-    free_map(map);
+void print(){
+    printf("OLA");
 }
-}
+
+// int main(){
+//     while(1){
+//         Map* map = new_map((Hash) hash, 6, 2, (Free) free_pair);
+//         int x = 5;
+//         int y = 5;
+//         int x2 = 5;
+//         int y2 = 11;
+//         map_put(map, &x, &y, (Copy) copy_value, (Compare) cmp_pair);
+//         *(int *)map_get(map, &x, (Compare) cmp_pair_int);
+//         map_put(map, &x2, &y2, (Copy) copy_value, (Compare) cmp_pair);
+//         *(int *)map_get(map, &x2, (Compare) cmp_pair_int);
+//         free_map(map);
+//         // List* list = new_list((Free) free_pair);
+//         // int* key = malloc(sizeof(int));
+//         // int* value = malloc(sizeof(int));
+//         // *key = 5;
+//         // *value = 5;
+//         // Pair* x = new_pair(key, value);
+//         // list_add(list, x);
+//         // list_get_value(list, x->key, (Compare) cmp_pair_int);
+//         // free_list(list);
+//     }
+// }
