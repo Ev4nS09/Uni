@@ -467,17 +467,9 @@ int cmp_pair(Pair* x, Pair* y){
     return *((int*)(x->key)) == *((int*)(y->key)) ? 1 : 0;
 }
 
-int cmp_int(int* x, int* y){
-    return *x == *y ? 1 : 0;
-}
-
-void free_int(int* value){
-    free(value);
-}
-
-void free_pair(Pair* pair){
-    free(pair->key);
-    free(pair->value);
+void free_pair(Pair* pair, Free free_key, Free free_value){
+    free_key(pair->key);
+    free_value(pair->value);
     free(pair);
 }
 
@@ -487,30 +479,42 @@ void* copy_value(int* value){
     return result;
 }
 
-void print(){
-    printf("OLA");
+void free_key(int* key){
+    free(key);
 }
 
-// int main(){
-//     while(1){
-//         Map* map = new_map((Hash) hash, 6, 2, (Free) free_pair);
-//         int x = 5;
-//         int y = 5;
-//         int x2 = 5;
-//         int y2 = 11;
-//         map_put(map, &x, &y, (Copy) copy_value, (Compare) cmp_pair);
-//         *(int *)map_get(map, &x, (Compare) cmp_pair_int);
-//         map_put(map, &x2, &y2, (Copy) copy_value, (Compare) cmp_pair);
-//         *(int *)map_get(map, &x2, (Compare) cmp_pair_int);
-//         free_map(map);
-//         // List* list = new_list((Free) free_pair);
-//         // int* key = malloc(sizeof(int));
-//         // int* value = malloc(sizeof(int));
-//         // *key = 5;
-//         // *value = 5;
-//         // Pair* x = new_pair(key, value);
-//         // list_add(list, x);
-//         // list_get_value(list, x->key, (Compare) cmp_pair_int);
-//         // free_list(list);
-//     }
-// }
+void free_value(int* value){
+    free(value);
+}
+
+int cmp_key(int* this, int* that){
+    return *this == *that ? 1 : 0;
+}
+
+int cmp_value(int* this, int* that){
+    return *this == *that ? 1 : 0;
+}
+
+int main(){
+    while(1){
+        Map* map = new_map((Hash) hash, 6, 2, (Free) free_pair);
+        int x = 5;
+        int y = 5;
+        int x2 = 5;
+        int y2 = 11;
+        map_put(map, &x, &y, (Copy) copy_value, (Compare) cmp_pair);
+        *(int *)map_get(map, &x, (Compare) cmp_pair_int);
+        map_put(map, &x2, &y2, (Copy) copy_value, (Compare) cmp_pair);
+        *(int *)map_get(map, &x2, (Compare) cmp_pair_int);
+        free_map(map);
+        // List* list = new_list((Free) free_pair);
+        // int* key = malloc(sizeof(int));
+        // int* value = malloc(sizeof(int));
+        // *key = 5;
+        // *value = 5;
+        // Pair* x = new_pair(key, value);
+        // list_add(list, x);
+        // list_get_value(list, x->key, (Compare) cmp_pair_int);
+        // free_list(list);
+    }
+}
