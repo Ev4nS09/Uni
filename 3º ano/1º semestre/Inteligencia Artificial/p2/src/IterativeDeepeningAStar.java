@@ -52,11 +52,11 @@ public class IterativeDeepeningAStar extends StateSearch{
         while(!open.isEmpty()){
 
             this.current = open.pop();
-            
-            if(this.current.isGoal(this.goal))
-                return this.current.getPath().iterator();
 
             if(this.current.getEvaluation(this.goal) <= cutoff){
+
+                if(this.current.isGoal(this.goal))
+                    return this.current.getPath().iterator();
 
                 successors = getSuccessors(this.current);
                 open.addAll(successors);

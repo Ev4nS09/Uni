@@ -447,6 +447,12 @@ void* map_get(Map* map, void* key, Compare cmp){
     return result2->value;
 }
 
+void free_pair(Pair* pair, Free free_key, Free free_value){
+    free_key(pair->key);
+    free_value(pair->value);
+    free(pair);
+}
+
 void free_map(Map* map){
     for(int i = 0; i < map->size; i++){
         free_list(map->buckets[i]);
@@ -465,12 +471,6 @@ int cmp_pair_int(Pair* x, int* y){
 
 int cmp_pair(Pair* x, Pair* y){
     return *((int*)(x->key)) == *((int*)(y->key)) ? 1 : 0;
-}
-
-void free_pair(Pair* pair, Free free_key, Free free_value){
-    free_key(pair->key);
-    free_value(pair->value);
-    free(pair);
 }
 
 void* copy_value(int* value){
